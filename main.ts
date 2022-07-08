@@ -2,6 +2,8 @@ namespace Garden22 {
     let fieldCanvas: HTMLCanvasElement;
     export let crc2: CanvasRenderingContext2D;
 
+    let fields: Field[] = [];
+
     window.addEventListener("load", hndLoad);
     function hndLoad(): void {
         fieldCanvas = document.querySelector("#field");
@@ -9,34 +11,51 @@ namespace Garden22 {
         drawField();
     }
     function drawField(): void {
-        crc2.fillStyle = "saddlebrown";
-        crc2.fillRect(0, 0, fieldCanvas.width, fieldCanvas.height);
-        let w: number = 5;
-        for (let i: number = 0; i < 10; i++) {
-            w = w + 110;
-            if (i == 0) {
-                w = 5;
-            }
-            crc2.moveTo(w, fieldCanvas.height);
-            crc2.lineTo(w, 0);
+        let c: Vector = new Vector(10 , 10);
+        for (let i: number = 0; i < 40; i++) {
 
-            crc2.lineWidth = 10;
-            crc2.stroke();
+            if (c.x > 780) {
+                c.x = 10;
+                c.y = c.y + 110;
+            } 
+            fields.push(new Field(new Vector(c.x, c.y)));
+            c.x = c.x + 110;
 
+            // console.log(c);
+            console.log(fields[2]);
+            console.log(fields[3]);
         }
-        let h: number = 5;
-        for (let i: number = 0; i < 10; i++) {
-            h = h + 110;
-            if (i == 0) {
-                h = 5;
-            }
-            crc2.moveTo(0, h);
-            crc2.lineTo(fieldCanvas.width, h);
-
-            crc2.lineWidth = 10;
-            crc2.stroke();
-
+        for (let field of fields) {
+            field.draw();
         }
+        // let w: number = 5;
+        // for (let i: number = 0; i < 10; i++) {
+        //     w = w + 110;
+        //     if (i == 0) {
+        //         w = 5;
+        //     }
+        //     crc2.moveTo(w, fieldCanvas.height);
+        //     crc2.lineTo(w, 0);
+
+        //     crc2.lineWidth = 10;
+        //     crc2.stroke();
+
+        // }
+        // let h: number = 5;
+        // for (let i: number = 0; i < 10; i++) {
+        //     h = h + 110;
+        //     if (i == 0) {
+        //         h = 5;
+        //     }
+        //     crc2.moveTo(0, h);
+        //     crc2.lineTo(fieldCanvas.width, h);
+
+        //     crc2.lineWidth = 10;
+        //     crc2.stroke();
+
+        // }
+
+
 
     }
 }
