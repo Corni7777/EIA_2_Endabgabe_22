@@ -1,7 +1,9 @@
 namespace Garden22 {
-    export class Plant {
+    export abstract class Plant {
         position: Vector;
         size: number;
+        price: number;
+        growthrate: number;
 
         constructor(_position: Vector) {
             this.position = _position;
@@ -15,7 +17,7 @@ namespace Garden22 {
             crc2.restore();
         }
         grow(): void {
-            this.size = this.size + 0.5;
+            this.size = this.size + this.growthrate;
             this.draw();
         }
     }

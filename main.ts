@@ -2,6 +2,13 @@ namespace Garden22 {
     let fieldCanvas: HTMLCanvasElement;
     export let crc2: CanvasRenderingContext2D;
 
+    let enablePlant: boolean = false;
+    let enableCarrot: boolean = false;
+    let enableTomato: boolean = false;
+    let enableCucumber: boolean = false;
+    let enableSalad: boolean = false;
+    let enablePepper: boolean = false;
+
     let fields: Field[] = [];
     let plants: Plant[] = [];
 
@@ -9,6 +16,13 @@ namespace Garden22 {
     function hndLoad(): void {
         fieldCanvas = document.querySelector("#field");
         crc2 = fieldCanvas.getContext("2d");
+
+        document.querySelector("#carrots").addEventListener("click", getPlantButton);
+        document.querySelector("#tomatos").addEventListener("click", getPlantButton);
+        document.querySelector("#cucumbers").addEventListener("click", getPlantButton);
+        document.querySelector("#salad").addEventListener("click", getPlantButton);
+        document.querySelector("#peppers").addEventListener("click", getPlantButton);
+
         fieldCanvas.addEventListener("click", getField);
         drawField();
         window.setInterval(update, 2000);
@@ -55,18 +69,39 @@ namespace Garden22 {
         }
     }
     function getField(_event: MouseEvent): void {
-        for (let field of fields) {
-            let plantPosition: Vector = field.getClicked(_event);
-            if (plantPosition == undefined) {
-                continue;
+        if (enablePlant == true) {
+            for (let field of fields) {
+                let plantPosition: Vector = field.getClicked(_event);
+                if (plantPosition == undefined) {
+                    continue;
+                }
+                plantPlant(plantPosition);
+                break;
             }
-            console.log(plantPosition);
-            plantPlant(plantPosition);
-            break;
+            enablePlant = false;
         }
     }
     function plantPlant(_position: Vector): void {
-        plants.push(new Plant(_position));
+        if (enableCarrot == true) {
+            plants.push(new Carrot(_position));
+            enableCarrot = false;
+        }
+        else if (enableTomato == true) {
+            plants.push(new Tomato(_position));
+            enableTomato = false;
+        }
+        else if (enableCucumber == true) {
+            plants.push(new Cucumber(_position));
+            enableCucumber = false;
+        }
+        else if (enableSalad == true) {
+            plants.push(new Salad(_position));
+            enableSalad = false;
+        }
+        else if (enablePepper == true) {
+            plants.push(new Pepper(_position));
+            enablePepper = false;
+        }
         plants[plants.length - 1].draw();
     }
     function update(): void {
@@ -75,7 +110,24 @@ namespace Garden22 {
                 continue;
             }
             plant.grow();
-
+        }
+    }
+    function getPlantButton(_event: MouseEvent): void {
+        enablePlant = true;
+        if (_event.target == document.querySelector("#carrots")) {
+            enableCarrot = true;
+        }
+        else if (_event.target == document.querySelector("#tomatos")) {
+            enableTomato = true;
+        }
+        else if (_event.target == document.querySelector("#cucumbers")) {
+            enableCucumber = true;
+        }
+        else if (_event.target == document.querySelector("#salad")) {
+            enableSalad = true;
+        }
+        else if (_event.target == document.querySelector("#peppers")) {
+            enablePepper = true;
         }
     }
 }

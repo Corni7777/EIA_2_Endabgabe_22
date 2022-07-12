@@ -1,9 +1,11 @@
 namespace Garden22 {
     export class Field {
         position: Vector;
+        holdPlant: boolean;
 
         constructor(_position: Vector) {
             this.position = _position;
+            this.holdPlant = false;
         }
         draw(): void {
             crc2.fillStyle = "saddlebrown";

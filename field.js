@@ -3,6 +3,7 @@ var Garden22;
     var Field = /** @class */ (function () {
         function Field(_position) {
             this.position = _position;
+            this.holdPlant = false;
         }
         Field.prototype.draw = function () {
             Garden22.crc2.fillStyle = "saddlebrown";

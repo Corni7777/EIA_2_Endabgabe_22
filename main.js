@@ -1,12 +1,23 @@
 var Garden22;
 (function (Garden22) {
     var fieldCanvas;
+    var enablePlant = false;
+    var enableCarrot = false;
+    var enableTomato = false;
+    var enableCucumber = false;
+    var enableSalad = false;
+    var enablePepper = false;
     var fields = [];
     var plants = [];
     window.addEventListener("load", hndLoad);
     function hndLoad() {
         fieldCanvas = document.querySelector("#field");
         Garden22.crc2 = fieldCanvas.getContext("2d");
+        document.querySelector("#carrots").addEventListener("click", getPlantButton);
+        document.querySelector("#tomatos").addEventListener("click", getPlantButton);
+        document.querySelector("#cucumbers").addEventListener("click", getPlantButton);
+        document.querySelector("#salad").addEventListener("click", getPlantButton);
+        document.querySelector("#peppers").addEventListener("click", getPlantButton);
         fieldCanvas.addEventListener("click", getField);
         drawField();
         window.setInterval(update, 2000);
@@ -49,19 +60,40 @@ var Garden22;
         }
     }
     function getField(_event) {
-        for (var _i = 0, fields_2 = fields; _i < fields_2.length; _i++) {
-            var field = fields_2[_i];
-            var plantPosition = field.getClicked(_event);
-            if (plantPosition == undefined) {
-                continue;
+        if (enablePlant == true) {
+            for (var _i = 0, fields_2 = fields; _i < fields_2.length; _i++) {
+                var field = fields_2[_i];
+                var plantPosition = field.getClicked(_event);
+                if (plantPosition == undefined) {
+                    continue;
+                }
+                plantPlant(plantPosition);
+                break;
             }
-            console.log(plantPosition);
-            plantPlant(plantPosition);
-            break;
+            enablePlant = false;
         }
     }
     function plantPlant(_position) {
-        plants.push(new Garden22.Plant(_position));
+        if (enableCarrot == true) {
+            plants.push(new Garden22.Carrot(_position));
+            enableCarrot = false;
+        }
+        else if (enableTomato == true) {
+            plants.push(new Garden22.Tomato(_position));
+            enableTomato = false;
+        }
+        else if (enableCucumber == true) {
+            plants.push(new Garden22.Cucumber(_position));
+            enableCucumber = false;
+        }
+        else if (enableSalad == true) {
+            plants.push(new Garden22.Salad(_position));
+            enableSalad = false;
+        }
+        else if (enablePepper == true) {
+            plants.push(new Garden22.Pepper(_position));
+            enablePepper = false;
+        }
         plants[plants.length - 1].draw();
     }
     function update() {
@@ -71,6 +103,24 @@ var Garden22;
                 continue;
             }
             plant.grow();
+        }
+    }
+    function getPlantButton(_event) {
+        enablePlant = true;
+        if (_event.target == document.querySelector("#carrots")) {
+            enableCarrot = true;
+        }
+        else if (_event.target == document.querySelector("#tomatos")) {
+            enableTomato = true;
+        }
+        else if (_event.target == document.querySelector("#cucumbers")) {
+            enableCucumber = true;
+        }
+        else if (_event.target == document.querySelector("#salad")) {
+            enableSalad = true;
+        }
+        else if (_event.target == document.querySelector("#peppers")) {
+            enablePepper = true;
         }
     }
 })(Garden22 || (Garden22 = {}));

@@ -12,7 +12,7 @@ var Garden22;
             Garden22.crc2.restore();
         };
         Plant.prototype.grow = function () {
-            this.size = this.size + 0.5;
+            this.size = this.size + this.growthrate;
             this.draw();
         };
         return Plant;
