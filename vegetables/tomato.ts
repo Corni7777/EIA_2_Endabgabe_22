@@ -3,7 +3,7 @@ namespace Garden22 {
 
         constructor(_position: Vector) {
             super(_position);
-            this.price = 3;
+            Pepper.price = 3;
             this.growthrate = 0.25;
         }
         draw(): void {

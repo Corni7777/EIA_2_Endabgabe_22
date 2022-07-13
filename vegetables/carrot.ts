@@ -3,9 +3,11 @@ namespace Garden22 {
 
         constructor(_position: Vector) {
             super(_position);
-            this.price = 3;
+            Carrot.price = 3;
             this.growthrate = 0.4;
         }
+
+        
         draw(): void {
             crc2.save();
             crc2.fillStyle = "orange";

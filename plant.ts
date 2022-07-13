@@ -1,8 +1,8 @@
 namespace Garden22 {
     export abstract class Plant {
+        static price: number = 1;
         position: Vector;
         size: number;
-        price: number;
         growthrate: number;
 
         constructor(_position: Vector) {

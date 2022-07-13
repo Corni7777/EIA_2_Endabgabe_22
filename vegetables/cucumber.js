@@ -19,7 +19,7 @@ var Garden22;
         __extends(Cucumber, _super);
         function Cucumber(_position) {
             var _this = _super.call(this, _position) || this;
-            _this.price = 3;
+            Cucumber.price = 3;
             _this.growthrate = 0.333333;
             return _this;
         }

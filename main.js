@@ -7,10 +7,20 @@ var Garden22;
     var enableCucumber = false;
     var enableSalad = false;
     var enablePepper = false;
+    var carrotInventory = 0;
+    var tomatoInventory = 0;
+    var cucumberInventory = 0;
+    var saladInventory = 0;
+    var pepperInventory = 0;
+    var wallet = 20;
     var fields = [];
     var plants = [];
-    window.addEventListener("load", hndLoad);
-    function hndLoad() {
+    // window.addEventListener("load", hndLoad);
+    // function hndLoad(): void {
+    //     document.querySelector("#start").addEventListener("click", hndSimulationLoad);
+    // }
+    window.addEventListener("load", hndSimulationLoad);
+    function hndSimulationLoad() {
         fieldCanvas = document.querySelector("#field");
         Garden22.crc2 = fieldCanvas.getContext("2d");
         document.querySelector("#carrots").addEventListener("click", getPlantButton);
@@ -18,6 +28,13 @@ var Garden22;
         document.querySelector("#cucumbers").addEventListener("click", getPlantButton);
         document.querySelector("#salad").addEventListener("click", getPlantButton);
         document.querySelector("#peppers").addEventListener("click", getPlantButton);
+        document.querySelector("#buycarrots").addEventListener("click", buyPlant);
+        document.querySelector("#buytomatos").addEventListener("click", buyPlant);
+        document.querySelector("#buycucumbers").addEventListener("click", buyPlant);
+        document.querySelector("#buysalad").addEventListener("click", buyPlant);
+        document.querySelector("#buypeppers").addEventListener("click", buyPlant);
+        updateInventory();
+        updateWallet();
         fieldCanvas.addEventListener("click", getField);
         drawField();
         window.setInterval(update, 2000);
@@ -74,32 +91,38 @@ var Garden22;
         }
     }
     function plantPlant(_position) {
-        if (enableCarrot == true) {
+        if (enableCarrot == true && carrotInventory > 0) {
             plants.push(new Garden22.Carrot(_position));
             enableCarrot = false;
+            carrotInventory--;
         }
-        else if (enableTomato == true) {
+        else if (enableTomato == true && tomatoInventory > 0) {
             plants.push(new Garden22.Tomato(_position));
             enableTomato = false;
+            tomatoInventory--;
         }
-        else if (enableCucumber == true) {
+        else if (enableCucumber == true && cucumberInventory > 0) {
             plants.push(new Garden22.Cucumber(_position));
             enableCucumber = false;
+            cucumberInventory--;
         }
-        else if (enableSalad == true) {
+        else if (enableSalad == true && saladInventory > 0) {
             plants.push(new Garden22.Salad(_position));
             enableSalad = false;
+            saladInventory--;
         }
-        else if (enablePepper == true) {
+        else if (enablePepper == true && pepperInventory > 0) {
             plants.push(new Garden22.Pepper(_position));
             enablePepper = false;
+            pepperInventory--;
         }
+        updateInventory();
         plants[plants.length - 1].draw();
     }
     function update() {
         for (var _i = 0, plants_1 = plants; _i < plants_1.length; _i++) {
             var plant = plants_1[_i];
-            if (plant.size > 2.5) {
+            if (plant.size > 2.8) {
                 continue;
             }
             plant.grow();
@@ -122,6 +145,40 @@ var Garden22;
         else if (_event.target == document.querySelector("#peppers")) {
             enablePepper = true;
         }
+    }
+    function buyPlant(_event) {
+        if (_event.target == document.querySelector("#buycarrots") && wallet >= Garden22.Carrot.price) {
+            carrotInventory++;
+            wallet = wallet - Garden22.Carrot.price;
+        }
+        else if (_event.target == document.querySelector("#buytomatos") && wallet >= Garden22.Tomato.price) {
+            tomatoInventory++;
+            wallet = wallet - Garden22.Tomato.price;
+        }
+        else if (_event.target == document.querySelector("#buycucumbers") && wallet >= Garden22.Cucumber.price) {
+            cucumberInventory++;
+            wallet = wallet - Garden22.Cucumber.price;
+        }
+        else if (_event.target == document.querySelector("#buysalad") && wallet >= Garden22.Salad.price) {
+            saladInventory++;
+            wallet = wallet - Garden22.Salad.price;
+        }
+        else if (_event.target == document.querySelector("#buypeppers") && wallet >= Garden22.Pepper.price) {
+            pepperInventory++;
+            wallet = wallet - Garden22.Pepper.price;
+        }
+        updateInventory();
+        updateWallet();
+    }
+    function updateInventory() {
+        document.querySelector("#carrotamount").innerHTML = carrotInventory.toString() + "x";
+        document.querySelector("#tomatoamount").innerHTML = tomatoInventory.toString() + "x";
+        document.querySelector("#cucumberamount").innerHTML = cucumberInventory.toString() + "x";
+        document.querySelector("#saladamount").innerHTML = saladInventory.toString() + "x";
+        document.querySelector("#pepperamount").innerHTML = pepperInventory.toString() + "x";
+    }
+    function updateWallet() {
+        document.querySelector("#wallet").innerHTML = "Your Wallet: " + wallet.toString() + "€";
     }
 })(Garden22 || (Garden22 = {}));
 //# sourceMappingURL=main.js.map
