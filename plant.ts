@@ -1,13 +1,16 @@
 namespace Garden22 {
     export abstract class Plant {
-        static price: number = 1;
+        static price: number;
         position: Vector;
         size: number;
         growthrate: number;
+        holdsPlant: boolean;
+        name: string;
 
         constructor(_position: Vector) {
             this.position = _position;
             this.size = 1;
+            this.holdsPlant = false;
         }
 
         draw(): void {

@@ -7,11 +7,14 @@ var Garden22;
     var enableCucumber = false;
     var enableSalad = false;
     var enablePepper = false;
+    var enableHarvest = false;
     var carrotInventory = 0;
     var tomatoInventory = 0;
     var cucumberInventory = 0;
     var saladInventory = 0;
     var pepperInventory = 0;
+    var fertalizerInventory = 0;
+    var pesticideInventory = 0;
     var wallet = 20;
     var fields = [];
     var plants = [];
@@ -28,13 +31,15 @@ var Garden22;
         document.querySelector("#cucumbers").addEventListener("click", getPlantButton);
         document.querySelector("#salad").addEventListener("click", getPlantButton);
         document.querySelector("#peppers").addEventListener("click", getPlantButton);
-        document.querySelector("#buycarrots").addEventListener("click", buyPlant);
-        document.querySelector("#buytomatos").addEventListener("click", buyPlant);
-        document.querySelector("#buycucumbers").addEventListener("click", buyPlant);
-        document.querySelector("#buysalad").addEventListener("click", buyPlant);
-        document.querySelector("#buypeppers").addEventListener("click", buyPlant);
+        document.querySelector("#harvest").addEventListener("click", getToolButton);
+        document.querySelector("#buycarrots").addEventListener("click", buy);
+        document.querySelector("#buytomatos").addEventListener("click", buy);
+        document.querySelector("#buycucumbers").addEventListener("click", buy);
+        document.querySelector("#buysalad").addEventListener("click", buy);
+        document.querySelector("#buypeppers").addEventListener("click", buy);
         updateInventory();
         updateWallet();
+        updatePrices();
         fieldCanvas.addEventListener("click", getField);
         drawField();
         window.setInterval(update, 2000);
@@ -49,8 +54,8 @@ var Garden22;
             fields.push(new Garden22.Field(new Garden22.Vector(c.x, c.y)));
             c.x = c.x + 110;
         }
-        for (var _i = 0, fields_1 = fields; _i < fields_1.length; _i++) {
-            var field = fields_1[_i];
+        for (var _a = 0, fields_1 = fields; _a < fields_1.length; _a++) {
+            var field = fields_1[_a];
             field.draw();
         }
         var w = 5;
@@ -78,16 +83,37 @@ var Garden22;
     }
     function getField(_event) {
         if (enablePlant == true) {
-            for (var _i = 0, fields_2 = fields; _i < fields_2.length; _i++) {
-                var field = fields_2[_i];
+            for (var _a = 0, fields_2 = fields; _a < fields_2.length; _a++) {
+                var field = fields_2[_a];
                 var plantPosition = field.getClicked(_event);
                 if (plantPosition == undefined) {
                     continue;
                 }
                 plantPlant(plantPosition);
+                field.holdPlant = true;
                 break;
             }
             enablePlant = false;
+        }
+        if (enableHarvest == true) {
+            for (var _b = 0, fields_3 = fields; _b < fields_3.length; _b++) {
+                var field = fields_3[_b];
+                var harvestPosition = field.getClicked(_event);
+                if (harvestPosition == undefined) {
+                    continue;
+                }
+                if (field.holdPlant == true) {
+                    for (var i = 0; i < plants.length; i++) {
+                        if (plants[i].position == harvestPosition && plants[i].size > 2.76) {
+                            harvest(i);
+                            field.draw();
+                            field.holdPlant = false;
+                        }
+                        enableHarvest = false;
+                        break;
+                    }
+                }
+            }
         }
     }
     function plantPlant(_position) {
@@ -120,13 +146,23 @@ var Garden22;
         plants[plants.length - 1].draw();
     }
     function update() {
-        for (var _i = 0, plants_1 = plants; _i < plants_1.length; _i++) {
-            var plant = plants_1[_i];
+        for (var _a = 0, plants_1 = plants; _a < plants_1.length; _a++) {
+            var plant = plants_1[_a];
             if (plant.size > 2.8) {
                 continue;
             }
             plant.grow();
         }
+        /* Das mit Number.EPSILON habe ich auf StackOverflow gefunden.
+        Scheinbar gibt es diese Eigenschaft in Typescript nicht (?) sondern
+        nur in Javascript, weshalb es beim transpilieren einwandfrei funtioniert
+        und wohl die beste Methode zum Runden ist (?)*/
+        Garden22.Carrot.price = Math.round(((Math.random() + 1) + Number.EPSILON) * 100) / 100;
+        Garden22.Tomato.price = Math.round(((Math.random() + 1) + Number.EPSILON) * 100) / 100;
+        Garden22.Cucumber.price = Math.round(((Math.random() + 1) + Number.EPSILON) * 100) / 100;
+        Garden22.Salad.price = Math.round(((Math.random() + 1) + Number.EPSILON) * 100) / 100;
+        Garden22.Pepper.price = Math.round(((Math.random() + 1) + Number.EPSILON) * 100) / 100;
+        updatePrices();
     }
     function getPlantButton(_event) {
         enablePlant = true;
@@ -146,7 +182,12 @@ var Garden22;
             enablePepper = true;
         }
     }
-    function buyPlant(_event) {
+    function getToolButton(_event) {
+        if (_event.target == document.querySelector("#harvest")) {
+            enableHarvest = true;
+        }
+    }
+    function buy(_event) {
         if (_event.target == document.querySelector("#buycarrots") && wallet >= Garden22.Carrot.price) {
             carrotInventory++;
             wallet = wallet - Garden22.Carrot.price;
@@ -176,9 +217,39 @@ var Garden22;
         document.querySelector("#cucumberamount").innerHTML = cucumberInventory.toString() + "x";
         document.querySelector("#saladamount").innerHTML = saladInventory.toString() + "x";
         document.querySelector("#pepperamount").innerHTML = pepperInventory.toString() + "x";
+        document.querySelector("#fertalizeramount").innerHTML = fertalizerInventory.toString() + "x";
+        document.querySelector("#pesticideamount").innerHTML = pesticideInventory.toString() + "x";
     }
     function updateWallet() {
         document.querySelector("#wallet").innerHTML = "Your Wallet: " + wallet.toString() + "€";
+    }
+    function updatePrices() {
+        document.querySelector("#carrotprice").innerHTML = Garden22.Carrot.price.toString() + "€";
+        document.querySelector("#tomatoprice").innerHTML = Garden22.Tomato.price.toString() + "€";
+        document.querySelector("#cucumberprice").innerHTML = Garden22.Cucumber.price.toString() + "€";
+        document.querySelector("#saladprice").innerHTML = Garden22.Salad.price.toString() + "€";
+        document.querySelector("#pepperprice").innerHTML = Garden22.Pepper.price.toString() + "€";
+    }
+    function harvest(_i) {
+        // for (let i: number = 0; i < plants.length; i++) {
+        //     if (plants[i].position == _position) {
+        if (plants[_i].name == "Carrot") {
+            wallet = wallet + Garden22.Carrot.price;
+        }
+        if (plants[_i].name == "Tomato") {
+            wallet = wallet + Garden22.Tomato.price;
+        }
+        if (plants[_i].name == "Cucumber") {
+            wallet = wallet + Garden22.Cucumber.price;
+        }
+        if (plants[_i].name == "Salad") {
+            wallet = wallet + Garden22.Salad.price;
+        }
+        if (plants[_i].name == "Pepper") {
+            wallet = wallet + Garden22.Pepper.price;
+        }
+        updateWallet();
+        plants.splice(_i, 1);
     }
 })(Garden22 || (Garden22 = {}));
 //# sourceMappingURL=main.js.map

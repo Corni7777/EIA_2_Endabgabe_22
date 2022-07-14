@@ -1,10 +1,11 @@
 namespace Garden22 {
     export class Carrot extends Plant {
+        static price: number = 1;
 
         constructor(_position: Vector) {
             super(_position);
-            Carrot.price = 3;
             this.growthrate = 0.4;
+            this.name = "Carrot";
         }
 
         

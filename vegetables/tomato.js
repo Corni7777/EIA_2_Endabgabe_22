@@ -19,8 +19,8 @@ var Garden22;
         __extends(Tomato, _super);
         function Tomato(_position) {
             var _this = _super.call(this, _position) || this;
-            Garden22.Pepper.price = 3;
             _this.growthrate = 0.25;
+            _this.name = "Tomato";
             return _this;
         }
         Tomato.prototype.draw = function () {
@@ -29,6 +29,7 @@ var Garden22;
             Garden22.crc2.fillRect(this.position.x + 5, this.position.y + 5, 30 * this.size, 30 * this.size);
             Garden22.crc2.restore();
         };
+        Tomato.price = 1;
         return Tomato;
     }(Garden22.Plant));
     Garden22.Tomato = Tomato;

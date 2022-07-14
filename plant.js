@@ -4,6 +4,7 @@ var Garden22;
         function Plant(_position) {
             this.position = _position;
             this.size = 1;
+            this.holdsPlant = false;
         }
         Plant.prototype.draw = function () {
             Garden22.crc2.save();
@@ -15,7 +16,6 @@ var Garden22;
             this.size = this.size + this.growthrate;
             this.draw();
         };
-        Plant.price = 1;
         return Plant;
     }());
     Garden22.Plant = Plant;
