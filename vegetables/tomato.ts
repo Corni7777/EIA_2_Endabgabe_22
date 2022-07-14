@@ -1,6 +1,6 @@
 namespace Garden22 {
     export class Tomato extends Plant {
-        static price: number = 1;
+        static price: number = Math.random() + 1;
 
         constructor(_position: Vector) {
             super(_position);

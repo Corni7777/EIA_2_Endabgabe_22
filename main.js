@@ -8,6 +8,7 @@ var Garden22;
     var enableSalad = false;
     var enablePepper = false;
     var enableHarvest = false;
+    var enablePestice = false;
     var carrotInventory = 0;
     var tomatoInventory = 0;
     var cucumberInventory = 0;
@@ -16,8 +17,11 @@ var Garden22;
     var fertalizerInventory = 0;
     var pesticideInventory = 0;
     var wallet = 20;
+    var fertalizerPrice = Math.random() * 0.5 + 0.5;
+    var pesticidePrice = Math.random() * 0.5 + 0.5;
     var fields = [];
     var plants = [];
+    var pests = [];
     // window.addEventListener("load", hndLoad);
     // function hndLoad(): void {
     //     document.querySelector("#start").addEventListener("click", hndSimulationLoad);
@@ -32,11 +36,14 @@ var Garden22;
         document.querySelector("#salad").addEventListener("click", getPlantButton);
         document.querySelector("#peppers").addEventListener("click", getPlantButton);
         document.querySelector("#harvest").addEventListener("click", getToolButton);
+        document.querySelector("#pesticide").addEventListener("click", getToolButton);
         document.querySelector("#buycarrots").addEventListener("click", buy);
         document.querySelector("#buytomatos").addEventListener("click", buy);
         document.querySelector("#buycucumbers").addEventListener("click", buy);
         document.querySelector("#buysalad").addEventListener("click", buy);
         document.querySelector("#buypeppers").addEventListener("click", buy);
+        document.querySelector("#buyfertalizer").addEventListener("click", buy);
+        document.querySelector("#buypesticide").addEventListener("click", buy);
         updateInventory();
         updateWallet();
         updatePrices();
@@ -104,16 +111,30 @@ var Garden22;
                 }
                 if (field.holdPlant == true) {
                     for (var i = 0; i < plants.length; i++) {
-                        if (plants[i].position == harvestPosition && plants[i].size > 2.76) {
+                        if (plants[i].position == harvestPosition && plants[i].size > 2.76 && plants[i].holdsPest == false) {
                             harvest(i);
                             field.draw();
                             field.holdPlant = false;
                         }
-                        enableHarvest = false;
+                        else {
+                            continue;
+                        }
                         break;
                     }
                 }
             }
+            enableHarvest = false;
+        }
+        if (enablePestice == true) {
+            for (var _c = 0, fields_4 = fields; _c < fields_4.length; _c++) {
+                var field = fields_4[_c];
+                var pesticidePosition = field.getClicked(_event);
+                if (pesticidePosition == undefined) {
+                    continue;
+                }
+                usePesticide(pesticidePosition, field);
+            }
+            enablePestice = false;
         }
     }
     function plantPlant(_position) {
@@ -146,22 +167,51 @@ var Garden22;
         plants[plants.length - 1].draw();
     }
     function update() {
-        for (var _a = 0, plants_1 = plants; _a < plants_1.length; _a++) {
-            var plant = plants_1[_a];
-            if (plant.size > 2.8) {
-                continue;
-            }
-            plant.grow();
+        for (var _a = 0, fields_5 = fields; _a < fields_5.length; _a++) {
+            var field = fields_5[_a];
+            field.draw();
         }
-        /* Das mit Number.EPSILON habe ich auf StackOverflow gefunden.
-        Scheinbar gibt es diese Eigenschaft in Typescript nicht (?) sondern
-        nur in Javascript, weshalb es beim transpilieren einwandfrei funtioniert
-        und wohl die beste Methode zum Runden ist (?)*/
-        Garden22.Carrot.price = Math.round(((Math.random() + 1) + Number.EPSILON) * 100) / 100;
-        Garden22.Tomato.price = Math.round(((Math.random() + 1) + Number.EPSILON) * 100) / 100;
-        Garden22.Cucumber.price = Math.round(((Math.random() + 1) + Number.EPSILON) * 100) / 100;
-        Garden22.Salad.price = Math.round(((Math.random() + 1) + Number.EPSILON) * 100) / 100;
-        Garden22.Pepper.price = Math.round(((Math.random() + 1) + Number.EPSILON) * 100) / 100;
+        var r = Math.round(Math.random() * 2);
+        if (r == 2) {
+            spawnPest();
+        }
+        for (var _b = 0, plants_1 = plants; _b < plants_1.length; _b++) {
+            var plant = plants_1[_b];
+            if (plant.size > 2.8 && plant.holdsPest == false) {
+                plant.draw();
+            }
+            else if (plant.size < 1 && plant.holdsPest == true) {
+                for (var _c = 0, pests_1 = pests; _c < pests_1.length; _c++) {
+                    var pest = pests_1[_c];
+                    if (pest.position == plant.position) {
+                        pests.splice(this, 1);
+                    }
+                }
+                for (var _d = 0, fields_6 = fields; _d < fields_6.length; _d++) {
+                    var field = fields_6[_d];
+                    if (field.position == plant.position) {
+                        field.draw();
+                        field.holdPlant = false;
+                    }
+                }
+                plants.splice(this, 1);
+            }
+            else {
+                plant.grow();
+                console.log(plant.size);
+            }
+        }
+        for (var _e = 0, pests_2 = pests; _e < pests_2.length; _e++) {
+            var pest = pests_2[_e];
+            pest.draw();
+        }
+        Garden22.Carrot.price = Math.random() + 1;
+        Garden22.Tomato.price = Math.random() + 1;
+        Garden22.Cucumber.price = Math.random() + 1;
+        Garden22.Salad.price = Math.random() + 1;
+        Garden22.Pepper.price = Math.random() + 1;
+        fertalizerPrice = Math.random() * 0.5 + 0.5;
+        pesticidePrice = Math.random() * 0.5 + 0.5;
         updatePrices();
     }
     function getPlantButton(_event) {
@@ -186,6 +236,9 @@ var Garden22;
         if (_event.target == document.querySelector("#harvest")) {
             enableHarvest = true;
         }
+        if (_event.target == document.querySelector("#pesticide")) {
+            enablePestice = true;
+        }
     }
     function buy(_event) {
         if (_event.target == document.querySelector("#buycarrots") && wallet >= Garden22.Carrot.price) {
@@ -208,6 +261,14 @@ var Garden22;
             pepperInventory++;
             wallet = wallet - Garden22.Pepper.price;
         }
+        else if (_event.target == document.querySelector("#buyfertalizer") && wallet > fertalizerPrice) {
+            fertalizerInventory++;
+            wallet = wallet - fertalizerPrice;
+        }
+        else if (_event.target == document.querySelector("#buypesticide") && wallet > pesticidePrice) {
+            pesticideInventory++;
+            wallet = wallet - pesticidePrice;
+        }
         updateInventory();
         updateWallet();
     }
@@ -221,14 +282,16 @@ var Garden22;
         document.querySelector("#pesticideamount").innerHTML = pesticideInventory.toString() + "x";
     }
     function updateWallet() {
-        document.querySelector("#wallet").innerHTML = "Your Wallet: " + wallet.toString() + "€";
+        document.querySelector("#wallet").innerHTML = "Your Wallet: " + wallet.toFixed(2) + "€";
     }
     function updatePrices() {
-        document.querySelector("#carrotprice").innerHTML = Garden22.Carrot.price.toString() + "€";
-        document.querySelector("#tomatoprice").innerHTML = Garden22.Tomato.price.toString() + "€";
-        document.querySelector("#cucumberprice").innerHTML = Garden22.Cucumber.price.toString() + "€";
-        document.querySelector("#saladprice").innerHTML = Garden22.Salad.price.toString() + "€";
-        document.querySelector("#pepperprice").innerHTML = Garden22.Pepper.price.toString() + "€";
+        document.querySelector("#carrotprice").innerHTML = Garden22.Carrot.price.toFixed(2) + "€";
+        document.querySelector("#tomatoprice").innerHTML = Garden22.Tomato.price.toFixed(2) + "€";
+        document.querySelector("#cucumberprice").innerHTML = Garden22.Cucumber.price.toFixed(2) + "€";
+        document.querySelector("#saladprice").innerHTML = Garden22.Salad.price.toFixed(2) + "€";
+        document.querySelector("#pepperprice").innerHTML = Garden22.Pepper.price.toFixed(2) + "€";
+        document.querySelector("#fertalizerprice").innerHTML = fertalizerPrice.toFixed(2) + "€";
+        document.querySelector("#pesticideprice").innerHTML = pesticidePrice.toFixed(2) + "€";
     }
     function harvest(_i) {
         // for (let i: number = 0; i < plants.length; i++) {
@@ -250,6 +313,44 @@ var Garden22;
         }
         updateWallet();
         plants.splice(_i, 1);
+    }
+    function spawnPest() {
+        if (plants.length > 0) {
+            var x = Math.round(Math.random() * (plants.length - 1));
+            console.log(plants[x].holdsPest);
+            if (plants[x].holdsPest == false) {
+                pests.push(new Garden22.Pest(plants[x].position));
+                console.log(plants[x].position);
+                plants[x].holdsPest = true;
+                plants[x].growthrate = plants[x].growthrate * -1;
+                for (var _a = 0, pests_3 = pests; _a < pests_3.length; _a++) {
+                    var pest = pests_3[_a];
+                    pest.draw();
+                }
+            }
+            else if (plants[x].holdsPest == undefined || plants[x].holdsPest == true) {
+                return;
+            }
+        }
+    }
+    function usePesticide(_position, _field) {
+        for (var _a = 0, plants_2 = plants; _a < plants_2.length; _a++) {
+            var plant = plants_2[_a];
+            if (plant.position == _position && plant.holdsPest == true) {
+                plant.holdsPest = false;
+                plant.growthrate = plant.growthrate * -1;
+                for (var _b = 0, pests_4 = pests; _b < pests_4.length; _b++) {
+                    var pest = pests_4[_b];
+                    if (pest.position == plant.position) {
+                        pests.splice(this, 1);
+                    }
+                }
+                pesticideInventory--;
+                updateInventory();
+                _field.draw();
+                plant.draw();
+            }
+        }
     }
 })(Garden22 || (Garden22 = {}));
 //# sourceMappingURL=main.js.map

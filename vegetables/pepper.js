@@ -29,7 +29,7 @@ var Garden22;
             Garden22.crc2.fillRect(this.position.x + 5, this.position.y + 5, 30 * this.size, 30 * this.size);
             Garden22.crc2.restore();
         };
-        Pepper.price = 1;
+        Pepper.price = Math.random() + 1;
         return Pepper;
     }(Garden22.Plant));
     Garden22.Pepper = Pepper;

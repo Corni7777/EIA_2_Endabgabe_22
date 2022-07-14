@@ -4,7 +4,7 @@ var Garden22;
         function Plant(_position) {
             this.position = _position;
             this.size = 1;
-            this.holdsPlant = false;
+            this.holdsPest = false;
         }
         Plant.prototype.draw = function () {
             Garden22.crc2.save();

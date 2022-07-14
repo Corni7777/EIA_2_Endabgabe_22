@@ -29,7 +29,7 @@ var Garden22;
             Garden22.crc2.fillRect(this.position.x + 5, this.position.y + 5, 30 * this.size, 30 * this.size);
             Garden22.crc2.restore();
         };
-        Cucumber.price = 1;
+        Cucumber.price = Math.random() + 1;
         return Cucumber;
     }(Garden22.Plant));
     Garden22.Cucumber = Cucumber;

@@ -4,13 +4,14 @@ namespace Garden22 {
         position: Vector;
         size: number;
         growthrate: number;
-        holdsPlant: boolean;
         name: string;
+        holdsPest: boolean;
+
 
         constructor(_position: Vector) {
             this.position = _position;
             this.size = 1;
-            this.holdsPlant = false;
+            this.holdsPest = false;
         }
 
         draw(): void {
