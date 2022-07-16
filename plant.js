@@ -16,6 +16,10 @@ var Garden22;
             this.size = this.size + this.growthrate;
             this.draw();
         };
+        Plant.prototype.recievePest = function () {
+            this.holdsPest = true;
+            this.growthrate = this.growthrate * -1;
+        };
         return Plant;
     }());
     Garden22.Plant = Plant;

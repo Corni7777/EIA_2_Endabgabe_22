@@ -6,6 +6,7 @@ namespace Garden22 {
             super(_position);
             this.growthrate = 0.333333;
             this.name = "Cucumber";
+            this.water = 4;
         }
         draw(): void {
             crc2.save();

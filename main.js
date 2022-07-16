@@ -9,6 +9,7 @@ var Garden22;
     var enablePepper = false;
     var enableHarvest = false;
     var enablePestice = false;
+    var enableWater = false;
     var carrotInventory = 0;
     var tomatoInventory = 0;
     var cucumberInventory = 0;
@@ -37,6 +38,7 @@ var Garden22;
         document.querySelector("#peppers").addEventListener("click", getPlantButton);
         document.querySelector("#harvest").addEventListener("click", getToolButton);
         document.querySelector("#pesticide").addEventListener("click", getToolButton);
+        document.querySelector("#water").addEventListener("click", getToolButton);
         document.querySelector("#buycarrots").addEventListener("click", buy);
         document.querySelector("#buytomatos").addEventListener("click", buy);
         document.querySelector("#buycucumbers").addEventListener("click", buy);
@@ -125,7 +127,7 @@ var Garden22;
             }
             enableHarvest = false;
         }
-        if (enablePestice == true) {
+        if (enablePestice == true && pesticideInventory > 0) {
             for (var _c = 0, fields_4 = fields; _c < fields_4.length; _c++) {
                 var field = fields_4[_c];
                 var pesticidePosition = field.getClicked(_event);
@@ -135,6 +137,17 @@ var Garden22;
                 usePesticide(pesticidePosition, field);
             }
             enablePestice = false;
+        }
+        if (enableWater == true) {
+            for (var _d = 0, fields_5 = fields; _d < fields_5.length; _d++) {
+                var field = fields_5[_d];
+                var waterPosition = field.getClicked(_event);
+                if (waterPosition == undefined) {
+                    continue;
+                }
+                useWater(waterPosition, field);
+            }
+            enableWater = false;
         }
     }
     function plantPlant(_position) {
@@ -167,42 +180,60 @@ var Garden22;
         plants[plants.length - 1].draw();
     }
     function update() {
-        for (var _a = 0, fields_5 = fields; _a < fields_5.length; _a++) {
-            var field = fields_5[_a];
+        for (var _a = 0, fields_6 = fields; _a < fields_6.length; _a++) {
+            var field = fields_6[_a];
             field.draw();
         }
-        var r = Math.round(Math.random() * 2);
+        var r = Math.round(Math.random() * 2 + 0.2);
         if (r == 2) {
             spawnPest();
         }
-        for (var _b = 0, plants_1 = plants; _b < plants_1.length; _b++) {
-            var plant = plants_1[_b];
-            if (plant.size > 2.8 && plant.holdsPest == false) {
-                plant.draw();
-            }
-            else if (plant.size < 1 && plant.holdsPest == true) {
-                for (var _c = 0, pests_1 = pests; _c < pests_1.length; _c++) {
-                    var pest = pests_1[_c];
-                    if (pest.position == plant.position) {
-                        pests.splice(this, 1);
+        updateWater();
+        for (var i = 0; i < plants.length; i++) {
+            console.log(plants[i].water);
+            if (plants[i].water <= 0 && plants[i].holdsPest == false) {
+                plants[i].draw();
+                drawWater(plants[i].position);
+                if (plants[i].water <= -3) {
+                    for (var _b = 0, fields_7 = fields; _b < fields_7.length; _b++) {
+                        var field = fields_7[_b];
+                        if (field.position == plants[i].position) {
+                            field.draw();
+                            field.holdPlant = false;
+                            if (plants[i].holdsPest == true) {
+                                removePest(i);
+                            }
+                        }
+                    }
+                    plants.splice(i, 1);
+                    if (plants.length > 0) {
+                        plants[i].draw();
+                        drawWater(plants[i].position);
+                        console.log(plants);
+                        continue;
                     }
                 }
-                for (var _d = 0, fields_6 = fields; _d < fields_6.length; _d++) {
-                    var field = fields_6[_d];
-                    if (field.position == plant.position) {
+            }
+            else if (plants[i].size > 2.8 && plants[i].holdsPest == false) {
+                plants[i].draw();
+            }
+            else if (plants[i].size < 1 && plants[i].holdsPest == true) {
+                for (var _c = 0, fields_8 = fields; _c < fields_8.length; _c++) {
+                    var field = fields_8[_c];
+                    if (field.position == plants[i].position) {
                         field.draw();
                         field.holdPlant = false;
                     }
                 }
-                plants.splice(this, 1);
+                plants.splice(i, 1);
+                plants[i].draw();
             }
             else {
-                plant.grow();
-                console.log(plant.size);
+                plants[i].grow();
             }
         }
-        for (var _e = 0, pests_2 = pests; _e < pests_2.length; _e++) {
-            var pest = pests_2[_e];
+        for (var _d = 0, pests_1 = pests; _d < pests_1.length; _d++) {
+            var pest = pests_1[_d];
             pest.draw();
         }
         Garden22.Carrot.price = Math.random() + 1;
@@ -236,8 +267,11 @@ var Garden22;
         if (_event.target == document.querySelector("#harvest")) {
             enableHarvest = true;
         }
-        if (_event.target == document.querySelector("#pesticide")) {
+        else if (_event.target == document.querySelector("#pesticide")) {
             enablePestice = true;
+        }
+        else if (_event.target == document.querySelector("#water")) {
+            enableWater = true;
         }
     }
     function buy(_event) {
@@ -317,14 +351,11 @@ var Garden22;
     function spawnPest() {
         if (plants.length > 0) {
             var x = Math.round(Math.random() * (plants.length - 1));
-            console.log(plants[x].holdsPest);
-            if (plants[x].holdsPest == false) {
+            if (plants[x].holdsPest == false && plants[x].water > 0 && plants[x].size > 1.4) {
                 pests.push(new Garden22.Pest(plants[x].position));
-                console.log(plants[x].position);
-                plants[x].holdsPest = true;
-                plants[x].growthrate = plants[x].growthrate * -1;
-                for (var _a = 0, pests_3 = pests; _a < pests_3.length; _a++) {
-                    var pest = pests_3[_a];
+                plants[x].recievePest();
+                for (var _a = 0, pests_2 = pests; _a < pests_2.length; _a++) {
+                    var pest = pests_2[_a];
                     pest.draw();
                 }
             }
@@ -334,13 +365,13 @@ var Garden22;
         }
     }
     function usePesticide(_position, _field) {
-        for (var _a = 0, plants_2 = plants; _a < plants_2.length; _a++) {
-            var plant = plants_2[_a];
+        for (var _a = 0, plants_1 = plants; _a < plants_1.length; _a++) {
+            var plant = plants_1[_a];
             if (plant.position == _position && plant.holdsPest == true) {
                 plant.holdsPest = false;
                 plant.growthrate = plant.growthrate * -1;
-                for (var _b = 0, pests_4 = pests; _b < pests_4.length; _b++) {
-                    var pest = pests_4[_b];
+                for (var _b = 0, pests_3 = pests; _b < pests_3.length; _b++) {
+                    var pest = pests_3[_b];
                     if (pest.position == plant.position) {
                         pests.splice(this, 1);
                     }
@@ -349,6 +380,36 @@ var Garden22;
                 updateInventory();
                 _field.draw();
                 plant.draw();
+                drawWater(plant.position);
+            }
+        }
+    }
+    function useWater(_position, _field) {
+        for (var i = 0; i < plants.length; i++) {
+            if (plants[i].position == _position && plants[i].water <= 0) {
+                plants[i].water = 5;
+            }
+            else if (plants[i].position == _position && plants[i].water > 0) {
+                plants.splice(i, 1);
+            }
+        }
+    }
+    function updateWater() {
+        for (var _a = 0, plants_2 = plants; _a < plants_2.length; _a++) {
+            var plant = plants_2[_a];
+            plant.water--;
+        }
+    }
+    function drawWater(_position) {
+        Garden22.crc2.save();
+        Garden22.crc2.fillStyle = "deepskyblue";
+        Garden22.crc2.fillRect(_position.x + 80, _position.y, 20, 20);
+        Garden22.crc2.restore();
+    }
+    function removePest(_i) {
+        for (var j = 0; j < pests.length; j++) {
+            if (pests[j].position == plants[_i].position) {
+                pests.splice(j, 1);
             }
         }
     }

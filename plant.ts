@@ -6,6 +6,7 @@ namespace Garden22 {
         growthrate: number;
         name: string;
         holdsPest: boolean;
+        water: number; 
 
 
         constructor(_position: Vector) {
@@ -23,6 +24,10 @@ namespace Garden22 {
         grow(): void {
             this.size = this.size + this.growthrate;
             this.draw();
+        }
+        recievePest(): void {
+            this.holdsPest = true;
+            this.growthrate = this.growthrate * -1;
         }
     }
 }

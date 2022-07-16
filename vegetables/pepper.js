@@ -21,6 +21,7 @@ var Garden22;
             var _this = _super.call(this, _position) || this;
             _this.growthrate = 0.3333333;
             _this.name = "Pepper";
+            _this.water = 5;
             return _this;
         }
         Pepper.prototype.draw = function () {

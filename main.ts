@@ -11,6 +11,7 @@ namespace Garden22 {
 
     let enableHarvest: boolean = false;
     let enablePestice: boolean = false;
+    let enableWater: boolean = false;
 
     let carrotInventory: number = 0;
     let tomatoInventory: number = 0;
@@ -48,6 +49,7 @@ namespace Garden22 {
 
         document.querySelector("#harvest").addEventListener("click", getToolButton);
         document.querySelector("#pesticide").addEventListener("click", getToolButton);
+        document.querySelector("#water").addEventListener("click", getToolButton);
 
 
         document.querySelector("#buycarrots").addEventListener("click", buy);
@@ -145,7 +147,7 @@ namespace Garden22 {
             }
             enableHarvest = false;
         }
-        if (enablePestice == true) {
+        if (enablePestice == true && pesticideInventory > 0) {
             for (let field of fields) {
                 let pesticidePosition: Vector = field.getClicked(_event);
                 if (pesticidePosition == undefined) {
@@ -154,6 +156,16 @@ namespace Garden22 {
                 usePesticide(pesticidePosition, field);
             }
             enablePestice = false;
+        }
+        if (enableWater == true) {
+            for (let field of fields) {
+                let waterPosition: Vector = field.getClicked(_event);
+                if (waterPosition == undefined) {
+                    continue;
+                }
+                useWater(waterPosition, field);
+            }
+            enableWater = false;
         }
     }
     function plantPlant(_position: Vector): void {
@@ -189,29 +201,49 @@ namespace Garden22 {
         for (let field of fields) {
             field.draw();
         }
-        let r: number = Math.round(Math.random() * 2);
+        let r: number = Math.round(Math.random() * 2 + 0.2);
         if (r == 2) {
             spawnPest();
         }
-        for (let plant of plants) {
-            if (plant.size > 2.8 && plant.holdsPest == false) {
-                plant.draw();
-            }
-            else if (plant.size < 1 && plant.holdsPest == true) {
-                for (let pest of pests) {
-                    if (pest.position == plant.position) {
-                        pests.splice(this, 1);
+        updateWater();
+        for (let i: number = 0; i < plants.length; i++) {
+            console.log(plants[i].water);
+            if (plants[i].water <= 0 && plants[i].holdsPest == false) {
+                plants[i].draw();
+                drawWater(plants[i].position);
+                if (plants[i].water <= -3) {
+                    for (let field of fields) {
+                        if (field.position == plants[i].position) {
+                            field.draw();
+                            field.holdPlant = false;
+                            if (plants[i].holdsPest == true) {
+                                removePest(i);
+                            }
+                        }
+                    }
+                    plants.splice(i, 1);
+                    if (plants.length > 0) {
+                        plants[i].draw();
+                        drawWater(plants[i].position);
+                        console.log(plants);
+                        continue;
                     }
                 }
+            }
+            else if (plants[i].size > 2.8 && plants[i].holdsPest == false) {
+                plants[i].draw();
+            }
+            else if (plants[i].size < 1 && plants[i].holdsPest == true) {
                 for (let field of fields) {
-                    if (field.position == plant.position) {
+                    if (field.position == plants[i].position) {
                         field.draw();
                         field.holdPlant = false;
                     }
                 }
-                plants.splice(this, 1);
+                plants.splice(i, 1);
+                plants[i].draw();
             }
-            else { plant.grow(); console.log(plant.size); }
+            else { plants[i].grow(); }
         }
         for (let pest of pests) {
             pest.draw();
@@ -249,8 +281,11 @@ namespace Garden22 {
         if (_event.target == document.querySelector("#harvest")) {
             enableHarvest = true;
         }
-        if (_event.target == document.querySelector("#pesticide")) {
+        else if (_event.target == document.querySelector("#pesticide")) {
             enablePestice = true;
+        }
+        else if (_event.target == document.querySelector("#water")) {
+            enableWater = true;
         }
     }
     function buy(_event: MouseEvent): void {
@@ -333,12 +368,9 @@ namespace Garden22 {
     function spawnPest(): void {
         if (plants.length > 0) {
             let x: number = Math.round(Math.random() * (plants.length - 1));
-            console.log(plants[x].holdsPest);
-            if (plants[x].holdsPest == false) {
+            if (plants[x].holdsPest == false && plants[x].water > 0 && plants[x].size > 1.4) {
                 pests.push(new Pest(plants[x].position));
-                console.log(plants[x].position);
-                plants[x].holdsPest = true;
-                plants[x].growthrate = plants[x].growthrate * -1;
+                plants[x].recievePest();
                 for (let pest of pests) {
                     pest.draw();
                 }
@@ -363,10 +395,39 @@ namespace Garden22 {
                 updateInventory();
                 _field.draw();
                 plant.draw();
+                drawWater(plant.position);
             }
         }
-
-
     }
-
+    function useWater(_position: Vector, _field: Field): void {
+        for (let i: number = 0; i < plants.length; i++) {
+            if (plants[i].position == _position && plants[i].water <= 0) {
+                plants[i].water = 5;
+            }
+            else if (plants[i].position == _position && plants[i].water > 0) {
+                plants.splice(i , 1);
+            }
+        }
+    }
+    function updateWater(): void {
+        for (let plant of plants) {
+            plant.water--;
+        }
+    }
+    function drawWater(_position: Vector): void {
+        crc2.save();
+        crc2.fillStyle = "deepskyblue";
+        crc2.fillRect(_position.x + 80, _position.y, 20, 20);
+        crc2.restore();
+    }
+    function removePest(_i: number): void {
+        for (let j: number = 0; j < pests.length; j++) {
+            if (pests[j].position == plants[_i].position) {
+                pests.splice(j, 1);
+            }
+        }
+    }
 }
+
+
+
