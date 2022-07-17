@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -17,6 +18,7 @@
     <script src="vegetables\pepper.js"></script>
     <script src="pest.js"></script>
 </head>
+
 <body>
     <header></header>
     <main>
@@ -37,36 +39,42 @@
             <button id="start">Push to start</button>
         </div> -->
         <div id="format">
-        <canvas width="890" height="560" id="field"></canvas>
-        <div id="seeds">
-            <p>Seeds:</p><br>
-            <button id="carrots" class="seedbutton">carrots</button> <span id="carrotamount"></span><br>
-            <button id="tomatos"class="seedbutton">tomatos</button> <span id="tomatoamount"></span><br>
-            <button id="cucumbers"class="seedbutton">cucumbers</button> <span id="cucumberamount"></span><br>
-            <button id="salad"class="seedbutton">salad</button> <span id="saladamount"></span><br>
-            <button id="peppers"class="seedbutton">peppers</button> <span id="pepperamount"></span>
-        </div>
-        <div id="tools">
-            <p>Tools:</p><br>
-            <button id="harvest" class="toolbutton">harvest</button><br>
-            <button id="water" class="toolbutton">water</button> <span id="wateramount">Ꝏ</span><br>
-            <button id="fertalizer"class="toolbutton">fertalizer</button> <span id="fertalizeramount"></span><br>
-            <button id="pesticide"class="toolbutton">pesticide</button> <span id="pesticideamount"></span><br>
-        </div>
-        <div id="market">
-            <span id="wallet"></span>
-            <p>Market</p><br>
-            <button id="buycarrots" class="marketbutton">buy carrots</button> <span id="carrotprice"></span><br>
-            <button id="buytomatos"class="marketbutton"> buy tomatos</button> <span id="tomatoprice"></span><br>
-            <button id="buycucumbers"class="marketbutton"> buy cucumbers</button> <span id="cucumberprice"></span><br>
-            <button id="buysalad"class="marketbutton">buy salad</button> <span id="saladprice"></span><br>
-            <button id="buypeppers"class="marketbutton">buy peppers</button> <span id="pepperprice"></span><br>
+            <H1>My Garden</H1>
+            <canvas width="890" height="560" id="field"></canvas>
+            <span id="currentUse">You are currently using: NOTHING </span>
+            <div id="seeds">
+                <p>Seeds:</p><br>
+                <button id="carrots" class="seedbutton">carrots</button> <span id="carrotamount"></span><br>
+                <button id="tomatos" class="seedbutton">tomatos</button> <span id="tomatoamount"></span><br>
+                <button id="cucumbers" class="seedbutton">cucumbers</button> <span id="cucumberamount"></span><br>
+                <button id="salad" class="seedbutton">salad</button> <span id="saladamount"></span><br>
+                <button id="peppers" class="seedbutton">peppers</button> <span id="pepperamount"></span>
+            </div>
+            <div id="tools">
+                <p>Tools:</p><br>
+                <button id="harvest" class="toolbutton">harvest</button><br>
+                <button id="water" class="toolbutton">water</button> <span id="wateramount">Ꝏ</span><br>
+                <button id="fertalizer" class="toolbutton">fertalizer</button> <span id="fertalizeramount"></span><br>
+                <button id="pesticide" class="toolbutton">pesticide</button> <span id="pesticideamount"></span><br>
+            </div>
+            <div id="market">
+                <span id="wallet"></span>
+                <p>Market</p><br>
+                <button id="buycarrots" class="marketbutton">buy carrots</button> <span id="carrotprice"></span><br>
+                <button id="buytomatos" class="marketbutton"> buy tomatos</button> <span id="tomatoprice"></span><br>
+                <button id="buycucumbers" class="marketbutton"> buy cucumbers</button> <span
+                    id="cucumberprice"></span><br>
+                <button id="buysalad" class="marketbutton">buy salad</button> <span id="saladprice"></span><br>
+                <button id="buypeppers" class="marketbutton">buy peppers</button> <span id="pepperprice"></span><br>
 
-            <button id="buyfertalizer"class="marketbutton">buy fertalizer</button> <span id="fertalizerprice"></span><br>
-            <button id="buypesticide"class="marketbutton">buy pesticide</button> <span id="pesticideprice"></span><br>
+                <button id="buyfertalizer" class="marketbutton">buy fertalizer</button> <span
+                    id="fertalizerprice"></span><br>
+                <button id="buypesticide" class="marketbutton">buy pesticide</button> <span
+                    id="pesticideprice"></span><br>
+            </div>
         </div>
-    </div>
     </main>
     <footer></footer>
 </body>
+
 </html>

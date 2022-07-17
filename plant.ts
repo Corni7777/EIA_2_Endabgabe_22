@@ -7,12 +7,14 @@ namespace Garden22 {
         name: string;
         holdsPest: boolean;
         water: number; 
+        fertalized: boolean;
 
 
         constructor(_position: Vector) {
             this.position = _position;
             this.size = 1;
             this.holdsPest = false;
+            this.fertalized = false;
         }
 
         draw(): void {

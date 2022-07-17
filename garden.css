@@ -1,8 +1,9 @@
-body{
+body {
     background-image: url(lawn_bg.jpg);
     font-family: Arial, Helvetica, sans-serif;
 }
-#settingsformat{
+
+#settingsformat {
     position: fixed;
     z-index: 4;
     color: white;
@@ -12,11 +13,13 @@ body{
     margin-left: auto;
     margin-right: auto;
 }
-input{
+
+input {
     font-size: 20px;
     height: 50px;
     width: 200px;
 }
+
 #start {
     height: 70px;
     width: 400px;
@@ -38,6 +41,16 @@ input{
     top: 50%;
     left: 50%;
     transform: translate(-50%, 20%);
+}
+
+#currentUse {
+    font-size: 28px;
+    position: relative;
+    background-color:honeydew;
+    padding: 10px;
+    left: -902px;
+    top: -470px;
+    text-align: center;
 
 }
 
@@ -61,10 +74,12 @@ input{
     margin-top: 20px;
     font-size: 20px;
 }
+
 .seedbutton:hover {
     cursor: pointer;
- 
+
 }
+
 #tools {
     width: 250px;
     height: 560px;
@@ -78,33 +93,69 @@ input{
     font-size: 25px;
     background-color: wheat;
 }
-.toolbutton{
+
+.toolbutton {
     width: 150px;
     height: 50px;
     margin-top: 20px;
     font-size: 20px;
 }
+
 .toolbutton:hover {
     cursor: pointer;
 }
+#carrots {
+    background-color: orange;
+}
+#tomatos {
+    background-color: red;
+}
+#cucumbers {
+    background-color: seagreen;
+}
+#salad {
+    background-color: limegreen;
+}
+#peppers {
+    background-color: yellow;
+}
+#fertalizer {
+    background-color: white;
+}
+#pesticide {
+    background-color: black;
+    color: white;
+}
+#water {
+    background-color: deepskyblue;
+    color: white;
+}
+#harvest {
+    background-color: goldenrod;
+    margin-left: -40px
+}
+
 #market {
     width: 100%;
     position: relative;
     top: -900px;
     text-align: center;
     font-size: 20px;
-    background-color:deepskyblue;
+    background-color: deepskyblue;
     padding: 10px;
 }
+
 #market p {
     font-size: 50px;
 }
+
 .marketbutton {
     width: 200px;
     height: 50px;
     margin-top: 20px;
     font-size: 20px;
 }
+
 #wallet {
     font-size: 30px;
     position: absolute;

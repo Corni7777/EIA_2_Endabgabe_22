@@ -5,6 +5,7 @@ var Garden22;
             this.position = _position;
             this.size = 1;
             this.holdsPest = false;
+            this.fertalized = false;
         }
         Plant.prototype.draw = function () {
             Garden22.crc2.save();
