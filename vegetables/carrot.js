@@ -27,7 +27,13 @@ var Garden22;
         Carrot.prototype.draw = function () {
             Garden22.crc2.save();
             Garden22.crc2.fillStyle = "orange";
-            Garden22.crc2.fillRect(this.position.x + 5, this.position.y + 5, 30 * this.size, 30 * this.size);
+            Garden22.crc2.translate(this.position.x + 50, this.position.y + 50);
+            Garden22.crc2.beginPath();
+            Garden22.crc2.moveTo(0, 15 * this.size);
+            Garden22.crc2.lineTo(-15 * (this.size / 2), -15 * this.size);
+            Garden22.crc2.lineTo(15 * (this.size / 2), -15 * this.size);
+            Garden22.crc2.closePath();
+            Garden22.crc2.fill();
             Garden22.crc2.restore();
         };
         Carrot.price = Math.random() + 1;

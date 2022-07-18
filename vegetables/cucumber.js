@@ -27,7 +27,11 @@ var Garden22;
         Cucumber.prototype.draw = function () {
             Garden22.crc2.save();
             Garden22.crc2.fillStyle = "seagreen";
-            Garden22.crc2.fillRect(this.position.x + 5, this.position.y + 5, 30 * this.size, 30 * this.size);
+            Garden22.crc2.translate(this.position.x + 50, this.position.y + 50);
+            Garden22.crc2.beginPath();
+            Garden22.crc2.ellipse(0, 0, 15 * this.size, 15 * (this.size / 3), 15, 0, 30);
+            Garden22.crc2.closePath();
+            Garden22.crc2.fill();
             Garden22.crc2.restore();
         };
         Cucumber.price = Math.random() + 1;

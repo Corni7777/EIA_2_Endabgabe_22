@@ -1,6 +1,6 @@
 namespace Garden22 {
     export class Carrot extends Plant {
-        static price: number = Math.random() + 1;
+        public static price: number = Math.random() + 1;
 
         constructor(_position: Vector) {
             super(_position);
@@ -9,11 +9,17 @@ namespace Garden22 {
             this.water = 5;
         }
 
-        
-        draw(): void {
+
+        public draw(): void {
             crc2.save();
             crc2.fillStyle = "orange";
-            crc2.fillRect(this.position.x + 5, this.position.y + 5, 30 * this.size, 30 * this.size);
+            crc2.translate(this.position.x + 50, this.position.y + 50);
+            crc2.beginPath();
+            crc2.moveTo(0, 15 * this.size);
+            crc2.lineTo(-15 * (this.size / 2), -15 * this.size);
+            crc2.lineTo(15 * (this.size / 2), -15 * this.size);
+            crc2.closePath();
+            crc2.fill();
             crc2.restore();
         }
     }

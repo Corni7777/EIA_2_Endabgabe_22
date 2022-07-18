@@ -21,13 +21,19 @@ var Garden22;
             var _this = _super.call(this, _position) || this;
             _this.growthrate = 0.3333333;
             _this.name = "Pepper";
-            _this.water = 5;
+            _this.water = 4;
             return _this;
         }
         Pepper.prototype.draw = function () {
             Garden22.crc2.save();
             Garden22.crc2.fillStyle = "yellow";
-            Garden22.crc2.fillRect(this.position.x + 5, this.position.y + 5, 30 * this.size, 30 * this.size);
+            Garden22.crc2.translate(this.position.x + 50, this.position.y + 50);
+            Garden22.crc2.beginPath();
+            Garden22.crc2.moveTo(0, 15 * (this.size * 0.75));
+            Garden22.crc2.bezierCurveTo(-20 * (this.size * 0.75), 30 * (this.size * 0.75), -20 * (this.size * 0.75), -30 * (this.size * 0.75), 0, -15 * (this.size * 0.75));
+            Garden22.crc2.bezierCurveTo(20 * (this.size * 0.75), -30 * (this.size * 0.75), 20 * (this.size * 0.75), 30 * (this.size * 0.75), 0, 15 * (this.size * 0.75));
+            Garden22.crc2.closePath();
+            Garden22.crc2.fill();
             Garden22.crc2.restore();
         };
         Pepper.price = Math.random() + 1;

@@ -109,6 +109,7 @@ namespace Garden22 {
             if (i == 0) {
                 h = 5;
             }
+
             crc2.moveTo(0, h);
             crc2.lineTo(fieldCanvas.width, h);
 
@@ -241,6 +242,7 @@ namespace Garden22 {
             }
             else if (plants[i].size > 2.7 && plants[i].holdsPest == false) {
                 plants[i].draw();
+                drawHarvestIndicator(plants[i].position);
             }
             else if (plants[i].size < 1 && plants[i].holdsPest == true) {
                 for (let field of fields) {
@@ -251,9 +253,15 @@ namespace Garden22 {
                 }
                 removePest(i);
                 plants.splice(i, 1);
-                plants[i].draw();
+                if (plants.length > 0) { plants[i].draw(); }
             }
-            else { plants[i].grow(); console.log(plants[i].size)}
+            else {
+                plants[i].grow();
+                if (plants[i].size > 2.7) {
+                    drawHarvestIndicator(plants[i].position);
+                }
+                console.log(plants[i].size);
+            }
         }
         for (let pest of pests) {
             pest.draw();
@@ -272,21 +280,6 @@ namespace Garden22 {
     function getPlantButton(_event: MouseEvent): void {
         allFalse();
         enablePlant = true;
-        // if (_event.target == document.querySelector("#carrots")) {
-        //     enableCarrot = true;
-        // }
-        // else if (_event.target == document.querySelector("#tomatos")) {
-        //     enableTomato = true;
-        // }
-        // else if (_event.target == document.querySelector("#cucumbers")) {
-        //     enableCucumber = true;
-        // }
-        // else if (_event.target == document.querySelector("#salad")) {
-        //     enableSalad = true;
-        // }
-        // else if (_event.target == document.querySelector("#peppers")) {
-        //     enablePepper = true;
-        // }
         switch (_event.target) {
             case document.querySelector("#carrots"):
                 enableCarrot = true;
@@ -312,15 +305,6 @@ namespace Garden22 {
     }
     function getToolButton(_event: MouseEvent): void {
         allFalse();
-        // if (_event.target == document.querySelector("#harvest")) {
-        //     enableHarvest = true;
-        // }
-        // else if (_event.target == document.querySelector("#pesticide")) {
-        //     enablePestice = true;
-        // }
-        // else if (_event.target == document.querySelector("#water")) {
-        //     enableWater = true;
-        // }
         switch (_event.target) {
             case document.querySelector("#harvest"):
                 enableHarvest = true;
@@ -398,23 +382,6 @@ namespace Garden22 {
         document.querySelector("#pesticideprice").innerHTML = pesticidePrice.toFixed(2) + "€";
     }
     function harvest(_i: number): void {
-        // for (let i: number = 0; i < plants.length; i++) {
-        //     if (plants[i].position == _position) {
-        // if (plants[_i].name == "Carrot") {
-        //     wallet = wallet + Carrot.price;
-        // }
-        // if (plants[_i].name == "Tomato") {
-        //     wallet = wallet + Tomato.price;
-        // }
-        // if (plants[_i].name == "Cucumber") {
-        //     wallet = wallet + Cucumber.price;
-        // }
-        // if (plants[_i].name == "Salad") {
-        //     wallet = wallet + Salad.price;
-        // }
-        // if (plants[_i].name == "Pepper") {
-        //     wallet = wallet + Pepper.price;
-        // }
         switch (plants[_i].name) {
             case "Carrot":
                 wallet = wallet + Carrot.price;
@@ -429,6 +396,20 @@ namespace Garden22 {
         }
         updateWallet();
         plants.splice(_i, 1);
+    }
+    function drawHarvestIndicator(_position: Vector): void {
+        crc2.save();
+        crc2.strokeStyle = "goldenrod";
+        crc2.translate(_position.x, _position.y);
+        crc2.beginPath();
+        crc2.moveTo(3, 3);
+        crc2.lineTo(97, 3);
+        crc2.lineTo(97, 97);
+        crc2.lineTo(3, 97);
+        crc2.closePath();
+        crc2.lineWidth = 6;
+        crc2.stroke();
+        crc2.restore();
     }
     function spawnPest(): void {
         if (plants.length > 0) {
@@ -514,7 +495,7 @@ namespace Garden22 {
             if (plants[i].position == _position && plants[i].fertalized == false) {
                 plants[i].fertalized = true;
                 drawFertalizer(_position);
-                fertalizerInventory --;
+                fertalizerInventory--;
                 updateInventory();
                 plants[i].growthrate = plants[i].growthrate + 0.2;
 
@@ -524,9 +505,9 @@ namespace Garden22 {
                     removePest(i);
                 }
                 plants.splice(i, 1);
-                _field.draw();  
-                console.log(plants); 
-            }   
+                _field.draw();
+                console.log(plants);
+            }
         }
     }
     function updateFertalizer(): void {
@@ -539,11 +520,12 @@ namespace Garden22 {
     function drawFertalizer(_position: Vector): void {
         crc2.save();
         crc2.strokeStyle = "white";
+        crc2.translate(_position.x, _position.y);
         crc2.beginPath();
-        crc2.moveTo(_position.x + 1, _position.y + 1);
-        crc2.lineTo(_position.x + 99, _position.y + 1);
-        crc2.lineTo(_position.x + 99, _position.y + 99);
-        crc2.lineTo(_position.x + 1, _position.y + 99);
+        crc2.moveTo(1, 1);
+        crc2.lineTo(99, 1);
+        crc2.lineTo(99, 99);
+        crc2.lineTo(1, 99);
         crc2.closePath();
         crc2.lineWidth = 2;
         crc2.stroke();

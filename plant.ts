@@ -1,13 +1,13 @@
 namespace Garden22 {
     export abstract class Plant {
-        static price: number;
-        position: Vector;
-        size: number;
-        growthrate: number;
-        name: string;
-        holdsPest: boolean;
-        water: number; 
-        fertalized: boolean;
+        public static price: number;
+        public position: Vector;
+        public size: number;
+        public growthrate: number;
+        public name: string;
+        public holdsPest: boolean;
+        public water: number; 
+        public fertalized: boolean;
 
 
         constructor(_position: Vector) {
@@ -17,17 +17,17 @@ namespace Garden22 {
             this.fertalized = false;
         }
 
-        draw(): void {
+        public draw(): void {
             crc2.save();
             crc2.fillStyle = "green";
             crc2.fillRect(this.position.x + 5, this.position.y + 5, 30 * this.size, 30 * this.size);
             crc2.restore();
         }
-        grow(): void {
+        public grow(): void {
             this.size = this.size + this.growthrate;
             this.draw();
         }
-        recievePest(): void {
+        public recievePest(): void {
             this.holdsPest = true;
             this.growthrate = this.growthrate * -1;
         }

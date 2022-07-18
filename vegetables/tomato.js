@@ -21,13 +21,18 @@ var Garden22;
             var _this = _super.call(this, _position) || this;
             _this.growthrate = 0.25;
             _this.name = "Tomato";
-            _this.water = 6;
+            _this.water = 5;
             return _this;
         }
         Tomato.prototype.draw = function () {
             Garden22.crc2.save();
             Garden22.crc2.fillStyle = "red";
-            Garden22.crc2.fillRect(this.position.x + 5, this.position.y + 5, 30 * this.size, 30 * this.size);
+            // crc2.fillRect(this.position.x + 5, this.position.y + 5, 30 * this.size, 30 * this.size);
+            Garden22.crc2.translate(this.position.x + 50, this.position.y + 50);
+            Garden22.crc2.beginPath();
+            Garden22.crc2.arc(0, 0, 7.5 * this.size, 0, 30);
+            Garden22.crc2.closePath();
+            Garden22.crc2.fill();
             Garden22.crc2.restore();
         };
         Tomato.price = Math.random() + 1;
