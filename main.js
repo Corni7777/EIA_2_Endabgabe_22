@@ -126,16 +126,19 @@ var Garden22;
             var field = fields_6[_i];
             field.draw();
         }
-        Garden22.Fertalizer.update();
         var r = Math.round(Math.random() * 2 + 0.2);
         if (r == 2) {
             Garden22.Pest.spawn();
         }
         Garden22.Water.update();
+        Garden22.Fertalizer.update();
         for (var i = 0; i < Garden22.plants.length; i++) {
             if (Garden22.plants[i].water <= 0 && Garden22.plants[i].holdsPest == false) {
                 Garden22.plants[i].draw();
                 Garden22.Water.draw(Garden22.plants[i].position);
+                if (Garden22.plants[i].size > 2.7) {
+                    Garden22.Plant.drawHarvestIndicator(Garden22.plants[i].position);
+                }
                 if (Garden22.plants[i].water <= -4) {
                     for (var _a = 0, fields_7 = Garden22.fields; _a < fields_7.length; _a++) {
                         var field = fields_7[_a];

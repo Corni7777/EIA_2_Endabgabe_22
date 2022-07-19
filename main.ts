@@ -137,16 +137,19 @@ namespace Garden22 {
         for (let field of fields) {
             field.draw();
         }
-        Fertalizer.update();
         let r: number = Math.round(Math.random() * 2 + 0.2);
         if (r == 2) {
             Pest.spawn();
         }
         Water.update();
+        Fertalizer.update();
         for (let i: number = 0; i < plants.length; i++) {
             if (plants[i].water <= 0 && plants[i].holdsPest == false) {
                 plants[i].draw();
                 Water.draw(plants[i].position);
+                if (plants[i].size > 2.7) {
+                    Plant.drawHarvestIndicator(plants[i].position);
+                }
                 if (plants[i].water <= -4) {
                     for (let field of fields) {
                         if (field.position == plants[i].position) {
