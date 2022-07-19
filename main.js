@@ -23,6 +23,7 @@ var Garden22;
     }
     function hndSimulationLoad() {
         document.querySelector("#format").setAttribute("style", "visibility: visible");
+        document.querySelector("#market").setAttribute("style", "visibility: visible");
         moneyString = formData.get("money").toString();
         Garden22.Wallet.money = parseInt(moneyString);
         document.querySelector("#settingsformat").remove();
@@ -60,9 +61,11 @@ var Garden22;
                 if (plantPosition == undefined) {
                     continue;
                 }
-                Garden22.Player.plant(plantPosition);
-                field.holdPlant = true;
-                break;
+                if (field.holdPlant == false) {
+                    Garden22.Player.plant(plantPosition);
+                    field.holdPlant = true;
+                    break;
+                }
             }
         }
         if (Garden22.Player.toolAction == Garden22.TOOLACTION.HARVEST) {

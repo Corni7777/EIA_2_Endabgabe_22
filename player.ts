@@ -1,15 +1,4 @@
 namespace Garden22 {
-    // let enablePlant: boolean = false;
-    // let enableCarrot: boolean = false;
-    // let enableTomato: boolean = false;
-    // let enableCucumber: boolean = false;
-    // let enableSalad: boolean = false;
-    // let enablePepper: boolean = false;
-
-    // let enableHarvest: boolean = false;
-    // let enablePestice: boolean = false;
-    // let enableWater: boolean = false;
-    // let enableFertalizer: boolean = false;
     export enum TOOLACTION {
         FERTILIZE,
         HARVEST,
@@ -90,7 +79,6 @@ namespace Garden22 {
                     }
                     plants.splice(i, 1);
                     _field.draw();
-                    console.log(plants);
                 }
             }
         }

@@ -28,10 +28,11 @@ namespace Garden22 {
 
     function hndSimulationLoad(): void {
         document.querySelector("#format").setAttribute("style", "visibility: visible");
+        document.querySelector("#market").setAttribute("style", "visibility: visible");
         moneyString = formData.get("money").toString();
         Wallet.money = parseInt(moneyString);
 
-        
+
         document.querySelector("#settingsformat").remove();
         fieldCanvas = document.querySelector("#field");
         crc2 = fieldCanvas.getContext("2d");
@@ -75,9 +76,11 @@ namespace Garden22 {
                 if (plantPosition == undefined) {
                     continue;
                 }
-                Player.plant(plantPosition);
-                field.holdPlant = true;
-                break;
+                if (field.holdPlant == false) {
+                    Player.plant(plantPosition);
+                    field.holdPlant = true;
+                    break;
+                }
             }
         }
         if (Player.toolAction == TOOLACTION.HARVEST) {
@@ -189,7 +192,6 @@ namespace Garden22 {
             pest.draw();
         }
         Market.updatePrices();
-
     }
     function getPlantButton(_event: MouseEvent): void {
         Player.toolAction = TOOLACTION.PLANT;
@@ -234,7 +236,6 @@ namespace Garden22 {
                 Player.toolAction = TOOLACTION.FERTILIZE;
                 currentUse.innerHTML = "You are currently using: FERTALIZER";
                 break;
-
         }
     }
 }
