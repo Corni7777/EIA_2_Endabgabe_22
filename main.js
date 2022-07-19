@@ -2,6 +2,10 @@ var Garden22;
 (function (Garden22) {
     var fieldCanvas;
     var currentUse;
+    var formData;
+    var moneyString;
+    var pVariationString;
+    var pVariationNum;
     var enablePlant = false;
     var enableCarrot = false;
     var enableTomato = false;
@@ -19,18 +23,33 @@ var Garden22;
     var pepperInventory = 0;
     var fertalizerInventory = 0;
     var pesticideInventory = 0;
-    var wallet = 20;
+    var wallet;
     var fertalizerPrice = Math.random() * 0.5 + 0.5;
     var pesticidePrice = Math.random() * 0.5 + 0.5;
     var fields = [];
-    var plants = [];
+    Garden22.plants = [];
     var pests = [];
-    // window.addEventListener("load", hndLoad);
-    // function hndLoad(): void {
-    //     document.querySelector("#start").addEventListener("click", hndSimulationLoad);
-    // }
-    window.addEventListener("load", hndSimulationLoad);
+    window.addEventListener("load", hndLoad);
+    function hndLoad() {
+        formData = new FormData(document.forms[0]);
+        pVariationString = (formData.get("variation").toString());
+        pVariationNum = parseFloat(pVariationString);
+        document.querySelector("#settings").addEventListener("change", hndSettingChange);
+        document.querySelector("#start").addEventListener("click", hndSimulationLoad);
+    }
+    function hndSettingChange() {
+        formData = new FormData(document.forms[0]);
+        moneyString = formData.get("money").toString();
+        pVariationString = (formData.get("variation").toString());
+        pVariationNum = parseFloat(pVariationString);
+    }
+    // window.addEventListener("load", hndSimulationLoad);
     function hndSimulationLoad() {
+        document.querySelector("#format").setAttribute("style", "visibility: visible");
+        moneyString = formData.get("money").toString();
+        wallet = parseInt(moneyString);
+        console.log(wallet);
+        document.querySelector("#settingsformat").remove();
         fieldCanvas = document.querySelector("#field");
         Garden22.crc2 = fieldCanvas.getContext("2d");
         currentUse = document.querySelector("#currentUse");
@@ -50,7 +69,7 @@ var Garden22;
         document.querySelector("#buypeppers").addEventListener("click", buy);
         document.querySelector("#buyfertalizer").addEventListener("click", buy);
         document.querySelector("#buypesticide").addEventListener("click", buy);
-        updateInventory();
+        Garden22.Inventory.update();
         updateWallet();
         updatePrices();
         fieldCanvas.addEventListener("click", getField);
@@ -116,8 +135,8 @@ var Garden22;
                     continue;
                 }
                 if (field.holdPlant == true) {
-                    for (var i = 0; i < plants.length; i++) {
-                        if (plants[i].position == harvestPosition && plants[i].size > 2.76 && plants[i].holdsPest == false) {
+                    for (var i = 0; i < Garden22.plants.length; i++) {
+                        if (Garden22.plants[i].position == harvestPosition && Garden22.plants[i].size > 2.76 && Garden22.plants[i].holdsPest == false) {
                             harvest(i);
                             field.draw();
                             field.holdPlant = false;
@@ -130,7 +149,7 @@ var Garden22;
                 }
             }
         }
-        if (enablePestice == true && pesticideInventory > 0) {
+        if (enablePestice == true && Garden22.Inventory.pesticideAmount > 0) {
             console.log(enableFertalizer);
             for (var _c = 0, fields_4 = fields; _c < fields_4.length; _c++) {
                 var field = fields_4[_c];
@@ -151,7 +170,7 @@ var Garden22;
                 useWater(waterPosition, field);
             }
         }
-        if (enableFertalizer == true && fertalizerInventory > 0) {
+        if (enableFertalizer == true && Garden22.Inventory.fertalizerAmount > 0) {
             for (var _e = 0, fields_6 = fields; _e < fields_6.length; _e++) {
                 var field = fields_6[_e];
                 var fertalizerPosition = field.getClicked(_event);
@@ -163,102 +182,102 @@ var Garden22;
         }
     }
     function plantPlant(_position) {
-        if (enableCarrot == true && carrotInventory > 0) {
-            plants.push(new Garden22.Carrot(_position));
-            carrotInventory--;
+        if (enableCarrot == true && Garden22.Inventory.carrotAmount > 0) {
+            Garden22.plants.push(new Garden22.Carrot(_position));
+            Garden22.Inventory.carrotAmount--;
         }
-        else if (enableTomato == true && tomatoInventory > 0) {
-            plants.push(new Garden22.Tomato(_position));
-            tomatoInventory--;
+        else if (enableTomato == true && Garden22.Inventory.tomatoAmount > 0) {
+            Garden22.plants.push(new Garden22.Tomato(_position));
+            Garden22.Inventory.tomatoAmount--;
         }
-        else if (enableCucumber == true && cucumberInventory > 0) {
-            plants.push(new Garden22.Cucumber(_position));
-            cucumberInventory--;
+        else if (enableCucumber == true && Garden22.Inventory.cucumberAmount > 0) {
+            Garden22.plants.push(new Garden22.Cucumber(_position));
+            Garden22.Inventory.cucumberAmount--;
         }
-        else if (enableSalad == true && saladInventory > 0) {
-            plants.push(new Garden22.Salad(_position));
-            saladInventory--;
+        else if (enableSalad == true && Garden22.Inventory.saladAmount > 0) {
+            Garden22.plants.push(new Garden22.Salad(_position));
+            Garden22.Inventory.saladAmount--;
         }
-        else if (enablePepper == true && pepperInventory > 0) {
-            plants.push(new Garden22.Pepper(_position));
-            pepperInventory--;
+        else if (enablePepper == true && Garden22.Inventory.pepperAmount > 0) {
+            Garden22.plants.push(new Garden22.Pepper(_position));
+            Garden22.Inventory.pepperAmount--;
         }
-        updateInventory();
-        plants[plants.length - 1].draw();
+        Garden22.Inventory.update();
+        Garden22.plants[Garden22.plants.length - 1].draw();
     }
     function update() {
         for (var _a = 0, fields_7 = fields; _a < fields_7.length; _a++) {
             var field = fields_7[_a];
             field.draw();
         }
-        updateFertalizer();
+        Garden22.Fertalizer.update();
         var r = Math.round(Math.random() * 2 + 0.2);
         if (r == 2) {
             spawnPest();
         }
         updateWater();
-        for (var i = 0; i < plants.length; i++) {
-            console.log(plants[i].water);
-            if (plants[i].water <= 0 && plants[i].holdsPest == false) {
-                plants[i].draw();
-                drawWater(plants[i].position);
-                if (plants[i].water <= -4) {
+        for (var i = 0; i < Garden22.plants.length; i++) {
+            console.log(Garden22.plants[i].water);
+            if (Garden22.plants[i].water <= 0 && Garden22.plants[i].holdsPest == false) {
+                Garden22.plants[i].draw();
+                drawWater(Garden22.plants[i].position);
+                if (Garden22.plants[i].water <= -4) {
                     for (var _b = 0, fields_8 = fields; _b < fields_8.length; _b++) {
                         var field = fields_8[_b];
-                        if (field.position == plants[i].position) {
+                        if (field.position == Garden22.plants[i].position) {
                             field.draw();
                             field.holdPlant = false;
-                            if (plants[i].holdsPest == true) {
+                            if (Garden22.plants[i].holdsPest == true) {
                                 removePest(i);
                             }
                         }
                     }
-                    plants.splice(i, 1);
-                    if (plants.length > 0) {
-                        plants[i].draw();
-                        drawWater(plants[i].position);
-                        console.log(plants);
+                    Garden22.plants.splice(i, 1);
+                    if (Garden22.plants.length > 0) {
+                        Garden22.plants[i].draw();
+                        drawWater(Garden22.plants[i].position);
+                        console.log(Garden22.plants);
                         continue;
                     }
                 }
             }
-            else if (plants[i].size > 2.7 && plants[i].holdsPest == false) {
-                plants[i].draw();
-                drawHarvestIndicator(plants[i].position);
+            else if (Garden22.plants[i].size > 2.7 && Garden22.plants[i].holdsPest == false) {
+                Garden22.plants[i].draw();
+                drawHarvestIndicator(Garden22.plants[i].position);
             }
-            else if (plants[i].size < 1 && plants[i].holdsPest == true) {
+            else if (Garden22.plants[i].size < 1 && Garden22.plants[i].holdsPest == true) {
                 for (var _c = 0, fields_9 = fields; _c < fields_9.length; _c++) {
                     var field = fields_9[_c];
-                    if (field.position == plants[i].position) {
+                    if (field.position == Garden22.plants[i].position) {
                         field.draw();
                         field.holdPlant = false;
                     }
                 }
                 removePest(i);
-                plants.splice(i, 1);
-                if (plants.length > 0) {
-                    plants[i].draw();
+                Garden22.plants.splice(i, 1);
+                if (Garden22.plants.length > 0) {
+                    Garden22.plants[i].draw();
                 }
             }
             else {
-                plants[i].grow();
-                if (plants[i].size > 2.7) {
-                    drawHarvestIndicator(plants[i].position);
+                Garden22.plants[i].grow();
+                if (Garden22.plants[i].size > 2.7) {
+                    drawHarvestIndicator(Garden22.plants[i].position);
                 }
-                console.log(plants[i].size);
+                console.log(Garden22.plants[i].size);
             }
         }
         for (var _d = 0, pests_1 = pests; _d < pests_1.length; _d++) {
             var pest = pests_1[_d];
             pest.draw();
         }
-        Garden22.Carrot.price = Math.random() + 1;
-        Garden22.Tomato.price = Math.random() + 1;
-        Garden22.Cucumber.price = Math.random() + 1;
-        Garden22.Salad.price = Math.random() + 1;
-        Garden22.Pepper.price = Math.random() + 1;
-        fertalizerPrice = Math.random() * 0.5 + 0.5;
-        pesticidePrice = Math.random() * 0.5 + 0.5;
+        Garden22.Carrot.price = Math.random() * pVariationNum + 1;
+        Garden22.Tomato.price = Math.random() * pVariationNum + 1;
+        Garden22.Cucumber.price = Math.random() * pVariationNum + 1;
+        Garden22.Salad.price = Math.random() * pVariationNum + 1;
+        Garden22.Pepper.price = Math.random() * pVariationNum + 1;
+        fertalizerPrice = Math.random() * pVariationNum + 0.5;
+        pesticidePrice = Math.random() * pVariationNum + 0.5;
         updatePrices();
     }
     function getPlantButton(_event) {
@@ -310,44 +329,35 @@ var Garden22;
     }
     function buy(_event) {
         if (_event.target == document.querySelector("#buycarrots") && wallet >= Garden22.Carrot.price) {
-            carrotInventory++;
-            wallet = wallet - Garden22.Carrot.price;
+            Garden22.Inventory.carrotAmount++;
+            wallet = wallet - Garden22.Carrot.price * 2;
         }
         else if (_event.target == document.querySelector("#buytomatos") && wallet >= Garden22.Tomato.price) {
-            tomatoInventory++;
-            wallet = wallet - Garden22.Tomato.price;
+            Garden22.Inventory.tomatoAmount++;
+            wallet = wallet - Garden22.Tomato.price * 2;
         }
         else if (_event.target == document.querySelector("#buycucumbers") && wallet >= Garden22.Cucumber.price) {
-            cucumberInventory++;
-            wallet = wallet - Garden22.Cucumber.price;
+            Garden22.Inventory.cucumberAmount++;
+            wallet = wallet - Garden22.Cucumber.price * 2;
         }
         else if (_event.target == document.querySelector("#buysalad") && wallet >= Garden22.Salad.price) {
-            saladInventory++;
-            wallet = wallet - Garden22.Salad.price;
+            Garden22.Inventory.saladAmount++;
+            wallet = wallet - Garden22.Salad.price * 2;
         }
         else if (_event.target == document.querySelector("#buypeppers") && wallet >= Garden22.Pepper.price) {
-            pepperInventory++;
-            wallet = wallet - Garden22.Pepper.price;
+            Garden22.Inventory.pepperAmount++;
+            wallet = wallet - Garden22.Pepper.price * 2;
         }
         else if (_event.target == document.querySelector("#buyfertalizer") && wallet > fertalizerPrice) {
-            fertalizerInventory++;
+            Garden22.Inventory.fertalizerAmount++;
             wallet = wallet - fertalizerPrice;
         }
         else if (_event.target == document.querySelector("#buypesticide") && wallet > pesticidePrice) {
-            pesticideInventory++;
+            Garden22.Inventory.pesticideAmount++;
             wallet = wallet - pesticidePrice;
         }
-        updateInventory();
+        Garden22.Inventory.update();
         updateWallet();
-    }
-    function updateInventory() {
-        document.querySelector("#carrotamount").innerHTML = carrotInventory.toString() + "x";
-        document.querySelector("#tomatoamount").innerHTML = tomatoInventory.toString() + "x";
-        document.querySelector("#cucumberamount").innerHTML = cucumberInventory.toString() + "x";
-        document.querySelector("#saladamount").innerHTML = saladInventory.toString() + "x";
-        document.querySelector("#pepperamount").innerHTML = pepperInventory.toString() + "x";
-        document.querySelector("#fertalizeramount").innerHTML = fertalizerInventory.toString() + "x";
-        document.querySelector("#pesticideamount").innerHTML = pesticideInventory.toString() + "x";
     }
     function updateWallet() {
         document.querySelector("#wallet").innerHTML = "Your Wallet: " + wallet.toFixed(2) + "€";
@@ -362,7 +372,7 @@ var Garden22;
         document.querySelector("#pesticideprice").innerHTML = pesticidePrice.toFixed(2) + "€";
     }
     function harvest(_i) {
-        switch (plants[_i].name) {
+        switch (Garden22.plants[_i].name) {
             case "Carrot":
                 wallet = wallet + Garden22.Carrot.price;
             case "Tomato":
@@ -375,7 +385,7 @@ var Garden22;
                 wallet = wallet + Garden22.Pepper.price;
         }
         updateWallet();
-        plants.splice(_i, 1);
+        Garden22.plants.splice(_i, 1);
     }
     function drawHarvestIndicator(_position) {
         Garden22.crc2.save();
@@ -392,61 +402,61 @@ var Garden22;
         Garden22.crc2.restore();
     }
     function spawnPest() {
-        if (plants.length > 0) {
-            var x = Math.round(Math.random() * (plants.length - 1));
-            if (plants[x].holdsPest == false && plants[x].water > 0 && plants[x].size > 1.4) {
-                pests.push(new Garden22.Pest(plants[x].position));
-                plants[x].recievePest();
+        if (Garden22.plants.length > 0) {
+            var x = Math.round(Math.random() * (Garden22.plants.length - 1));
+            if (Garden22.plants[x].holdsPest == false && Garden22.plants[x].water > 0 && Garden22.plants[x].size > 1.4) {
+                pests.push(new Garden22.Pest(Garden22.plants[x].position));
+                Garden22.plants[x].recievePest();
                 for (var _a = 0, pests_2 = pests; _a < pests_2.length; _a++) {
                     var pest = pests_2[_a];
                     pest.draw();
                 }
             }
-            else if (plants[x].holdsPest == undefined || plants[x].holdsPest == true) {
+            else if (Garden22.plants[x].holdsPest == undefined || Garden22.plants[x].holdsPest == true) {
                 return;
             }
         }
     }
     function usePesticide(_position, _field) {
-        for (var i = 0; i < plants.length; i++) {
-            if (plants[i].position == _position && plants[i].holdsPest == true && plants[i].water > 0) {
-                plants[i].holdsPest = false;
-                plants[i].growthrate = plants[i].growthrate * -1;
+        for (var i = 0; i < Garden22.plants.length; i++) {
+            if (Garden22.plants[i].position == _position && Garden22.plants[i].holdsPest == true && Garden22.plants[i].water > 0) {
+                Garden22.plants[i].holdsPest = false;
+                Garden22.plants[i].growthrate = Garden22.plants[i].growthrate * -1;
                 removePest(i);
                 pesticideInventory--;
-                updateInventory();
+                Garden22.Inventory.update();
                 _field.draw();
-                updateFertalizer();
-                plants[i].draw();
+                Garden22.Fertalizer.update();
+                Garden22.plants[i].draw();
             }
         }
     }
     function removePest(_i) {
         for (var j = 0; j < pests.length; j++) {
-            if (pests[j].position == plants[_i].position) {
+            if (pests[j].position == Garden22.plants[_i].position) {
                 pests.splice(j, 1);
             }
         }
     }
     function useWater(_position, _field) {
-        for (var i = 0; i < plants.length; i++) {
-            if (plants[i].position == _position && plants[i].water <= 0) {
-                plants[i].water = 5;
+        for (var i = 0; i < Garden22.plants.length; i++) {
+            if (Garden22.plants[i].position == _position && Garden22.plants[i].water <= 0) {
+                Garden22.plants[i].water = 5;
                 _field.draw();
-                updateFertalizer();
-                plants[i].draw();
+                Garden22.Fertalizer.update();
+                Garden22.plants[i].draw();
             }
-            else if (plants[i].position == _position && plants[i].water > 0) {
-                if (plants[i].holdsPest == true) {
+            else if (Garden22.plants[i].position == _position && Garden22.plants[i].water > 0) {
+                if (Garden22.plants[i].holdsPest == true) {
                     removePest(i);
                 }
-                plants.splice(i, 1);
+                Garden22.plants.splice(i, 1);
                 _field.draw();
             }
         }
     }
     function updateWater() {
-        for (var _a = 0, plants_1 = plants; _a < plants_1.length; _a++) {
+        for (var _a = 0, plants_1 = Garden22.plants; _a < plants_1.length; _a++) {
             var plant = plants_1[_a];
             if (plant.holdsPest == false) {
                 plant.water--;
@@ -472,45 +482,45 @@ var Garden22;
         enableFertalizer = false;
     }
     function useFertalizer(_position, _field) {
-        for (var i = 0; i < plants.length; i++) {
-            if (plants[i].position == _position && plants[i].fertalized == false) {
-                plants[i].fertalized = true;
-                drawFertalizer(_position);
+        for (var i = 0; i < Garden22.plants.length; i++) {
+            if (Garden22.plants[i].position == _position && Garden22.plants[i].fertalized == false) {
+                Garden22.plants[i].fertalized = true;
+                Garden22.Fertalizer.draw(_position);
                 fertalizerInventory--;
-                updateInventory();
-                plants[i].growthrate = plants[i].growthrate + 0.2;
+                Garden22.Inventory.update();
+                Garden22.plants[i].growthrate = Garden22.plants[i].growthrate + 0.2;
             }
-            else if (plants[i].position == _position && plants[i].fertalized == true) {
-                if (plants[i].holdsPest == true) {
+            else if (Garden22.plants[i].position == _position && Garden22.plants[i].fertalized == true) {
+                if (Garden22.plants[i].holdsPest == true) {
                     removePest(i);
                 }
-                plants.splice(i, 1);
+                Garden22.plants.splice(i, 1);
                 _field.draw();
-                console.log(plants);
+                console.log(Garden22.plants);
             }
         }
     }
     function updateFertalizer() {
-        for (var _a = 0, plants_2 = plants; _a < plants_2.length; _a++) {
+        for (var _a = 0, plants_2 = Garden22.plants; _a < plants_2.length; _a++) {
             var plant = plants_2[_a];
             if (plant.fertalized == true) {
-                drawFertalizer(plant.position);
+                Garden22.Fertalizer.draw(plant.position);
             }
         }
     }
-    function drawFertalizer(_position) {
-        Garden22.crc2.save();
-        Garden22.crc2.strokeStyle = "white";
-        Garden22.crc2.translate(_position.x, _position.y);
-        Garden22.crc2.beginPath();
-        Garden22.crc2.moveTo(1, 1);
-        Garden22.crc2.lineTo(99, 1);
-        Garden22.crc2.lineTo(99, 99);
-        Garden22.crc2.lineTo(1, 99);
-        Garden22.crc2.closePath();
-        Garden22.crc2.lineWidth = 2;
-        Garden22.crc2.stroke();
-        Garden22.crc2.restore();
-    }
+    // function drawFertalizer(_position: Vector): void {
+    //     crc2.save();
+    //     crc2.strokeStyle = "white";
+    //     crc2.translate(_position.x, _position.y);
+    //     crc2.beginPath();
+    //     crc2.moveTo(1, 1);
+    //     crc2.lineTo(99, 1);
+    //     crc2.lineTo(99, 99);
+    //     crc2.lineTo(1, 99);
+    //     crc2.closePath();
+    //     crc2.lineWidth = 2;
+    //     crc2.stroke();
+    //     crc2.restore();
+    // }
 })(Garden22 || (Garden22 = {}));
 //# sourceMappingURL=main.js.map

@@ -17,27 +17,30 @@
     <script src="vegetables\salad.js"></script>
     <script src="vegetables\pepper.js"></script>
     <script src="pest.js"></script>
+    <script src="inventory.js"></script>
+    <script src="fertalizer.js"></script>
 </head>
 
 <body>
     <header></header>
     <main>
-        <!-- <div id="settingsformat">
+        <div id="settingsformat">
             <p>Choose your starting Money and how much prices vary: </p><br>
-            <form id="settings">
+            <form id="settings" oninput="currentvariation.value = variation.value">
                 <fieldset>
                     <legend>Starting Money</legend>
-                    <input type="number" name="money" step="1" min="1" value="10">
+                    <input id="startingmoney" type="number" name="money" step="1" min="1" value="30">
                     <label for="money"></label>
                 </fieldset>
                 <fieldset>
                     <legend>Price Variation</legend>
-                    <input type="number" name="variation" step="0.1" min="0" value="0.2">
+                    <input type="range" name="variation" step="0.1" min="0.5" max="2" value="1">
+                    <output id="output" name="currentvariation" for="variation">1.0</output>
                     <label for="variation"></label>
                 </fieldset>
             </form>
             <button id="start">Push to start</button>
-        </div> -->
+        </div>
         <div id="format">
             <H1>My Garden</H1>
             <canvas width="890" height="560" id="field"></canvas>
@@ -60,17 +63,21 @@
             <div id="market">
                 <span id="wallet"></span>
                 <p>Market</p><br>
-                <button id="buycarrots" class="marketbutton">buy carrots</button> <span id="carrotprice"></span><br>
-                <button id="buytomatos" class="marketbutton"> buy tomatos</button> <span id="tomatoprice"></span><br>
-                <button id="buycucumbers" class="marketbutton"> buy cucumbers</button> <span
-                    id="cucumberprice"></span><br>
-                <button id="buysalad" class="marketbutton">buy salad</button> <span id="saladprice"></span><br>
-                <button id="buypeppers" class="marketbutton">buy peppers</button> <span id="pepperprice"></span><br>
+                <div id="marketseeds">
+                    <button id="buycarrots" class="marketbutton">buy carrots</button> <span id="carrotprice"></span><br>
+                    <button id="buytomatos" class="marketbutton"> buy tomatos</button> <span
+                        id="tomatoprice"></span><br>
+                    <button id="buycucumbers" class="marketbutton"> buy cucumbers</button> <span
+                        id="cucumberprice"></span><br>
+                    <button id="buysalad" class="marketbutton">buy salad</button> <span id="saladprice"></span><br>
+                    <button id="buypeppers" class="marketbutton">buy peppers</button> <span id="pepperprice"></span><br>
+                </div>
 
-                <button id="buyfertalizer" class="marketbutton">buy fertalizer</button> <span
-                    id="fertalizerprice"></span><br>
-                <button id="buypesticide" class="marketbutton">buy pesticide</button> <span
-                    id="pesticideprice"></span><br>
+                <div id="markettools"> 
+                    <button id="buyfertalizer" class="marketbutton">buy fertalizer</button> <span id="fertalizerprice"></span><br>
+                    <button id="buypesticide" class="marketbutton">buy pesticide</button> <span id="pesticideprice"></span><br>
+                </div>
+
             </div>
         </div>
     </main>

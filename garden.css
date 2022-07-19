@@ -13,6 +13,20 @@ body {
     margin-left: auto;
     margin-right: auto;
 }
+fieldset {
+    border-color: white;
+    border-width: 10px;
+    width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 70px;
+}
+#output {
+    position: relative;
+    font-size: 25px;
+    top: 20px;
+    left: -120px;
+}
 
 input {
     font-size: 20px;
@@ -33,7 +47,7 @@ input {
     width: 1410px;
     margin-left: auto;
     margin-right: auto;
-    /* visibility: hidden; */
+    visibility:hidden;
 }
 
 #field {
@@ -161,4 +175,16 @@ input {
     position: absolute;
     right: 20px;
     top: 20px;
+}
+#marketseeds {
+    position: absolute;
+    
+    width: 400px;
+    left: 400px;
+}
+#markettools {
+    position: absolute;
+    
+    width: 400px;
+    left: 800px;
 }
