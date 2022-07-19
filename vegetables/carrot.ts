@@ -6,7 +6,7 @@ namespace Garden22 {
             super(_position);
             this.growthrate = 0.4;
             this.name = "Carrot";
-            this.water = 5;
+            this.water = 3;
         }
 
 
@@ -16,8 +16,8 @@ namespace Garden22 {
             crc2.translate(this.position.x + 50, this.position.y + 50);
             crc2.beginPath();
             crc2.moveTo(0, 15 * this.size);
-            crc2.lineTo(-15 * (this.size / 2), -15 * this.size);
-            crc2.lineTo(15 * (this.size / 2), -15 * this.size);
+            crc2.lineTo(-15 * (this.size / 2), -15 * (this.size) * 0.8);
+            crc2.lineTo(15 * (this.size / 2), -15 * (this.size) * 0.8);
             crc2.closePath();
             crc2.fill();
             crc2.restore();

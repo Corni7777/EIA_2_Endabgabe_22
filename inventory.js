@@ -4,7 +4,6 @@ var Garden22;
         function Inventory() {
         }
         Inventory.update = function () {
-            console.log(Inventory.carrotAmount);
             document.querySelector("#carrotamount").innerHTML = Inventory.carrotAmount.toString() + "x";
             document.querySelector("#tomatoamount").innerHTML = Inventory.tomatoAmount.toString() + "x";
             document.querySelector("#cucumberamount").innerHTML = Inventory.cucumberAmount.toString() + "x";

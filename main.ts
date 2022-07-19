@@ -1,42 +1,15 @@
 namespace Garden22 {
-    let fieldCanvas: HTMLCanvasElement;
+    export let fieldCanvas: HTMLCanvasElement;
     export let crc2: CanvasRenderingContext2D;
     let currentUse: HTMLSpanElement;
 
     let formData: FormData;
     let moneyString: string;
     let pVariationString: string;
-    let pVariationNum: number;
-
-    let enablePlant: boolean = false;
-    let enableCarrot: boolean = false;
-    let enableTomato: boolean = false;
-    let enableCucumber: boolean = false;
-    let enableSalad: boolean = false;
-    let enablePepper: boolean = false;
-
-    let enableHarvest: boolean = false;
-    let enablePestice: boolean = false;
-    let enableWater: boolean = false;
-    let enableFertalizer: boolean = false;
-
-    let carrotInventory: number = 0;
-    let tomatoInventory: number = 0;
-    let cucumberInventory: number = 0;
-    let saladInventory: number = 0;
-    let pepperInventory: number = 0;
-
-    let fertalizerInventory: number = 0;
-    let pesticideInventory: number = 0;
-
-    let wallet: number;
-
-    let fertalizerPrice: number = Math.random() * 0.5 + 0.5;
-    let pesticidePrice: number = Math.random() * 0.5 + 0.5;
-
-    let fields: Field[] = [];
+    export let pVariationNum: number;
+    export let fields: Field[] = [];
     export let plants: Plant[] = [];
-    let pests: Pest[] = [];
+    export let pests: Pest[] = [];
 
     window.addEventListener("load", hndLoad);
     function hndLoad(): void {
@@ -53,12 +26,10 @@ namespace Garden22 {
         pVariationNum = parseFloat(pVariationString);
     }
 
-    // window.addEventListener("load", hndSimulationLoad);
     function hndSimulationLoad(): void {
         document.querySelector("#format").setAttribute("style", "visibility: visible");
         moneyString = formData.get("money").toString();
-        wallet = parseInt(moneyString);
-        console.log(wallet);
+        Wallet.money = parseInt(moneyString);
 
         
         document.querySelector("#settingsformat").remove();
@@ -78,81 +49,38 @@ namespace Garden22 {
         document.querySelector("#fertalizer").addEventListener("click", getToolButton);
 
 
-        document.querySelector("#buycarrots").addEventListener("click", buy);
-        document.querySelector("#buytomatos").addEventListener("click", buy);
-        document.querySelector("#buycucumbers").addEventListener("click", buy);
-        document.querySelector("#buysalad").addEventListener("click", buy);
-        document.querySelector("#buypeppers").addEventListener("click", buy);
+        document.querySelector("#buycarrots").addEventListener("click", Market.buy);
+        document.querySelector("#buytomatos").addEventListener("click", Market.buy);
+        document.querySelector("#buycucumbers").addEventListener("click", Market.buy);
+        document.querySelector("#buysalad").addEventListener("click", Market.buy);
+        document.querySelector("#buypeppers").addEventListener("click", Market.buy);
 
-        document.querySelector("#buyfertalizer").addEventListener("click", buy);
-        document.querySelector("#buypesticide").addEventListener("click", buy);
+        document.querySelector("#buyfertalizer").addEventListener("click", Market.buy);
+        document.querySelector("#buypesticide").addEventListener("click", Market.buy);
 
 
         Inventory.update();
-        updateWallet();
-        updatePrices();
+        Wallet.update();
+        Market.updatePrices();
 
 
-        fieldCanvas.addEventListener("click", getField);
-        createFields();
+        fieldCanvas.addEventListener("click", getAction);
+        Field.createFields();
         window.setInterval(update, 3000);
     }
-    function createFields(): void {
-        // fields and black lines
-        let c: Vector = new Vector(10, 10);
-        for (let i: number = 0; i < 40; i++) {
-
-            if (c.x > 780) {
-                c.x = 10;
-                c.y = c.y + 110;
-            }
-            fields.push(new Field(new Vector(c.x, c.y)));
-            c.x = c.x + 110;
-        }
-        for (let field of fields) {
-            field.draw();
-        }
-        let w: number = 5;
-        for (let i: number = 0; i < 10; i++) {
-            w = w + 110;
-            if (i == 0) {
-                w = 5;
-            }
-            crc2.moveTo(w, fieldCanvas.height);
-            crc2.lineTo(w, 0);
-
-            crc2.lineWidth = 10;
-            crc2.stroke();
-
-        }
-        let h: number = 5;
-        for (let i: number = 0; i < 10; i++) {
-            h = h + 110;
-            if (i == 0) {
-                h = 5;
-            }
-
-            crc2.moveTo(0, h);
-            crc2.lineTo(fieldCanvas.width, h);
-
-            crc2.lineWidth = 10;
-            crc2.stroke();
-
-        }
-    }
-    function getField(_event: MouseEvent): void {
-        if (enablePlant == true) {
+    function getAction(_event: MouseEvent): void {
+        if (Player.toolAction == TOOLACTION.PLANT) {
             for (let field of fields) {
                 let plantPosition: Vector = field.getClicked(_event);
                 if (plantPosition == undefined) {
                     continue;
                 }
-                plantPlant(plantPosition);
+                Player.plant(plantPosition);
                 field.holdPlant = true;
                 break;
             }
         }
-        if (enableHarvest == true) {
+        if (Player.toolAction == TOOLACTION.HARVEST) {
             for (let field of fields) {
                 let harvestPosition: Vector = field.getClicked(_event);
                 if (harvestPosition == undefined) {
@@ -160,8 +88,8 @@ namespace Garden22 {
                 }
                 if (field.holdPlant == true) {
                     for (let i: number = 0; i < plants.length; i++) {
-                        if (plants[i].position == harvestPosition && plants[i].size > 2.76 && plants[i].holdsPest == false) {
-                            harvest(i);
+                        if (plants[i].position == harvestPosition && plants[i].size > 2.7 && plants[i].holdsPest == false) {
+                            Player.harvest(i);
                             field.draw();
                             field.holdPlant = false;
                         }
@@ -173,61 +101,35 @@ namespace Garden22 {
                 }
             }
         }
-        if (enablePestice == true && Inventory.pesticideAmount > 0) {
-            console.log(enableFertalizer);
+        if (Player.toolAction == TOOLACTION.PESTICIDE && Inventory.pesticideAmount > 0) {
             for (let field of fields) {
                 let pesticidePosition: Vector = field.getClicked(_event);
                 if (pesticidePosition == undefined) {
                     continue;
                 }
-                usePesticide(pesticidePosition, field);
+                Player.usePesticide(pesticidePosition, field);
             }
         }
-        if (enableWater == true) {
+        if (Player.toolAction == TOOLACTION.WATER) {
             for (let field of fields) {
                 let waterPosition: Vector = field.getClicked(_event);
                 if (waterPosition == undefined) {
                     continue;
                 }
-                useWater(waterPosition, field);
+                Player.useWater(waterPosition, field);
             }
         }
-        if (enableFertalizer == true && Inventory.fertalizerAmount > 0) {
+        if (Player.toolAction == TOOLACTION.FERTILIZE && Inventory.fertalizerAmount > 0) {
             for (let field of fields) {
                 let fertalizerPosition: Vector = field.getClicked(_event);
                 if (fertalizerPosition == undefined) {
                     continue;
                 }
-                useFertalizer(fertalizerPosition, field);
+                Player.useFertalizer(fertalizerPosition, field);
             }
         }
     }
 
-
-    function plantPlant(_position: Vector): void {
-        if (enableCarrot == true && Inventory.carrotAmount > 0) {
-            plants.push(new Carrot(_position));
-            Inventory.carrotAmount--;
-        }
-        else if (enableTomato == true && Inventory.tomatoAmount > 0) {
-            plants.push(new Tomato(_position));
-            Inventory.tomatoAmount--;
-        }
-        else if (enableCucumber == true && Inventory.cucumberAmount > 0) {
-            plants.push(new Cucumber(_position));
-            Inventory.cucumberAmount--;
-        }
-        else if (enableSalad == true && Inventory.saladAmount > 0) {
-            plants.push(new Salad(_position));
-            Inventory.saladAmount--;
-        }
-        else if (enablePepper == true && Inventory.pepperAmount > 0) {
-            plants.push(new Pepper(_position));
-            Inventory.pepperAmount--;
-        }
-        Inventory.update();
-        plants[plants.length - 1].draw();
-    }
     function update(): void {
         for (let field of fields) {
             field.draw();
@@ -235,36 +137,34 @@ namespace Garden22 {
         Fertalizer.update();
         let r: number = Math.round(Math.random() * 2 + 0.2);
         if (r == 2) {
-            spawnPest();
+            Pest.spawn();
         }
-        updateWater();
+        Water.update();
         for (let i: number = 0; i < plants.length; i++) {
-            console.log(plants[i].water);
             if (plants[i].water <= 0 && plants[i].holdsPest == false) {
                 plants[i].draw();
-                drawWater(plants[i].position);
+                Water.draw(plants[i].position);
                 if (plants[i].water <= -4) {
                     for (let field of fields) {
                         if (field.position == plants[i].position) {
                             field.draw();
                             field.holdPlant = false;
                             if (plants[i].holdsPest == true) {
-                                removePest(i);
+                                Pesticide.removePest(i);
                             }
                         }
                     }
                     plants.splice(i, 1);
                     if (plants.length > 0) {
                         plants[i].draw();
-                        drawWater(plants[i].position);
-                        console.log(plants);
+                        Water.draw(plants[i].position);
                         continue;
                     }
                 }
             }
             else if (plants[i].size > 2.7 && plants[i].holdsPest == false) {
                 plants[i].draw();
-                drawHarvestIndicator(plants[i].position);
+                Plant.drawHarvestIndicator(plants[i].position);
             }
             else if (plants[i].size < 1 && plants[i].holdsPest == true) {
                 for (let field of fields) {
@@ -273,14 +173,14 @@ namespace Garden22 {
                         field.holdPlant = false;
                     }
                 }
-                removePest(i);
+                Pesticide.removePest(i);
                 plants.splice(i, 1);
                 if (plants.length > 0) { plants[i].draw(); }
             }
             else {
                 plants[i].grow();
                 if (plants[i].size > 2.7) {
-                    drawHarvestIndicator(plants[i].position);
+                    Plant.drawHarvestIndicator(plants[i].position);
                 }
                 console.log(plants[i].size);
             }
@@ -288,258 +188,53 @@ namespace Garden22 {
         for (let pest of pests) {
             pest.draw();
         }
-        Carrot.price = Math.random() * pVariationNum + 1;
-        Tomato.price = Math.random() * pVariationNum + 1;
-        Cucumber.price = Math.random() * pVariationNum + 1;
-        Salad.price = Math.random() * pVariationNum + 1;
-        Pepper.price = Math.random() * pVariationNum + 1;
-
-        fertalizerPrice = Math.random() * pVariationNum + 0.5;
-        pesticidePrice = Math.random() *  pVariationNum + 0.5;
-        updatePrices();
+        Market.updatePrices();
 
     }
     function getPlantButton(_event: MouseEvent): void {
-        allFalse();
-        enablePlant = true;
+        Player.toolAction = TOOLACTION.PLANT;
         switch (_event.target) {
             case document.querySelector("#carrots"):
-                enableCarrot = true;
+                Player.planting = PLANTING.CARROT;
                 currentUse.innerHTML = "You are currently using: CARROTS";
                 break;
             case document.querySelector("#tomatos"):
-                enableTomato = true;
+                Player.planting = PLANTING.TOMATO;
                 currentUse.innerHTML = "You are currently using: TOMATOS";
                 break;
             case document.querySelector("#cucumbers"):
-                enableCucumber = true;
+                Player.planting = PLANTING.CUCUMBER;
                 currentUse.innerHTML = "You are currently using: CUCUMBERS";
                 break;
             case document.querySelector("#salad"):
-                enableSalad = true;
+                Player.planting = PLANTING.SALAD;
                 currentUse.innerHTML = "You are currently using: SALAD";
                 break;
             case document.querySelector("#peppers"):
-                enablePepper = true;
+                Player.planting = PLANTING.PEPPER;
                 currentUse.innerHTML = "You are currently using: PEPPERS";
                 break;
         }
     }
     function getToolButton(_event: MouseEvent): void {
-        allFalse();
         switch (_event.target) {
             case document.querySelector("#harvest"):
-                enableHarvest = true;
+                Player.toolAction = TOOLACTION.HARVEST;
                 currentUse.innerHTML = "You are currently using: HARVEST";
                 break;
             case document.querySelector("#pesticide"):
-                enablePestice = true;
+                Player.toolAction = TOOLACTION.PESTICIDE;
                 currentUse.innerHTML = "You are currently using: PESTICIDE";
                 break;
             case document.querySelector("#water"):
-                enableWater = true;
+                Player.toolAction = TOOLACTION.WATER;
                 currentUse.innerHTML = "You are currently using: WATER";
                 break;
             case document.querySelector("#fertalizer"):
-                enableFertalizer = true;
+                Player.toolAction = TOOLACTION.FERTILIZE;
                 currentUse.innerHTML = "You are currently using: FERTALIZER";
                 break;
 
         }
     }
-    function buy(_event: MouseEvent): void {
-        if (_event.target == document.querySelector("#buycarrots") && wallet >= Carrot.price) {
-            Inventory.carrotAmount++;
-            wallet = wallet - Carrot.price * 2;
-        }
-        else if (_event.target == document.querySelector("#buytomatos") && wallet >= Tomato.price) {
-            Inventory.tomatoAmount++;
-            wallet = wallet - Tomato.price * 2;
-        }
-        else if (_event.target == document.querySelector("#buycucumbers") && wallet >= Cucumber.price) {
-            Inventory.cucumberAmount++;
-            wallet = wallet - Cucumber.price * 2;
-        }
-        else if (_event.target == document.querySelector("#buysalad") && wallet >= Salad.price) {
-            Inventory.saladAmount++;
-            wallet = wallet - Salad.price * 2;
-        }
-        else if (_event.target == document.querySelector("#buypeppers") && wallet >= Pepper.price) {
-            Inventory.pepperAmount++;
-            wallet = wallet - Pepper.price * 2;
-        }
-        else if (_event.target == document.querySelector("#buyfertalizer") && wallet > fertalizerPrice) {
-            Inventory.fertalizerAmount++;
-            wallet = wallet - fertalizerPrice;
-        }
-        else if (_event.target == document.querySelector("#buypesticide") && wallet > pesticidePrice) {
-            Inventory.pesticideAmount++;
-            wallet = wallet - pesticidePrice;
-        }
-        Inventory.update();
-        updateWallet();
-    }
-    function updateWallet(): void {
-        document.querySelector("#wallet").innerHTML = "Your Wallet: " + wallet.toFixed(2) + "€";
-    }
-    function updatePrices(): void {
-        document.querySelector("#carrotprice").innerHTML = Carrot.price.toFixed(2) + "€";
-        document.querySelector("#tomatoprice").innerHTML = Tomato.price.toFixed(2) + "€";
-        document.querySelector("#cucumberprice").innerHTML = Cucumber.price.toFixed(2) + "€";
-        document.querySelector("#saladprice").innerHTML = Salad.price.toFixed(2) + "€";
-        document.querySelector("#pepperprice").innerHTML = Pepper.price.toFixed(2) + "€";
-
-        document.querySelector("#fertalizerprice").innerHTML = fertalizerPrice.toFixed(2) + "€";
-        document.querySelector("#pesticideprice").innerHTML = pesticidePrice.toFixed(2) + "€";
-    }
-    function harvest(_i: number): void {
-        switch (plants[_i].name) {
-            case "Carrot":
-                wallet = wallet + Carrot.price;
-            case "Tomato":
-                wallet = wallet + Tomato.price;
-            case "Cucumber":
-                wallet = wallet + Cucumber.price;
-            case "Salad":
-                wallet = wallet + Salad.price;
-            case "Pepper":
-                wallet = wallet + Pepper.price;
-        }
-        updateWallet();
-        plants.splice(_i, 1);
-    }
-    function drawHarvestIndicator(_position: Vector): void {
-        crc2.save();
-        crc2.strokeStyle = "goldenrod";
-        crc2.translate(_position.x, _position.y);
-        crc2.beginPath();
-        crc2.moveTo(3, 3);
-        crc2.lineTo(97, 3);
-        crc2.lineTo(97, 97);
-        crc2.lineTo(3, 97);
-        crc2.closePath();
-        crc2.lineWidth = 6;
-        crc2.stroke();
-        crc2.restore();
-    }
-    function spawnPest(): void {
-        if (plants.length > 0) {
-            let x: number = Math.round(Math.random() * (plants.length - 1));
-            if (plants[x].holdsPest == false && plants[x].water > 0 && plants[x].size > 1.4) {
-                pests.push(new Pest(plants[x].position));
-                plants[x].recievePest();
-                for (let pest of pests) {
-                    pest.draw();
-                }
-            }
-            else if (plants[x].holdsPest == undefined || plants[x].holdsPest == true) {
-                return;
-            }
-        }
-    }
-    function usePesticide(_position: Vector, _field: Field): void {
-        for (let i: number = 0; i < plants.length; i++) {
-            if (plants[i].position == _position && plants[i].holdsPest == true && plants[i].water > 0) {
-                plants[i].holdsPest = false;
-                plants[i].growthrate = plants[i].growthrate * - 1;
-                removePest(i);
-                pesticideInventory--;
-                Inventory.update();
-                _field.draw();
-                Fertalizer.update();
-                plants[i].draw();
-            }
-        }
-    }
-    function removePest(_i: number): void {
-        for (let j: number = 0; j < pests.length; j++) {
-            if (pests[j].position == plants[_i].position) {
-                pests.splice(j, 1);
-            }
-        }
-    }
-    function useWater(_position: Vector, _field: Field): void {
-        for (let i: number = 0; i < plants.length; i++) {
-            if (plants[i].position == _position && plants[i].water <= 0) {
-                plants[i].water = 5;
-                _field.draw();
-                Fertalizer.update();
-                plants[i].draw();
-            }
-            else if (plants[i].position == _position && plants[i].water > 0) {
-                if (plants[i].holdsPest == true) {
-                    removePest(i);
-                }
-                plants.splice(i, 1);
-                _field.draw();
-            }
-        }
-    }
-    function updateWater(): void {
-        for (let plant of plants) {
-            if (plant.holdsPest == false) {
-                plant.water--;
-            }
-        }
-    }
-    function drawWater(_position: Vector): void {
-        crc2.save();
-        crc2.fillStyle = "deepskyblue";
-        crc2.fillRect(_position.x + 80, _position.y, 20, 20);
-        crc2.restore();
-    }
-    function allFalse(): void {
-        enablePlant = false;
-        enableCarrot = false;
-        enableTomato = false;
-        enableCucumber = false;
-        enableSalad = false;
-        enablePepper = false;
-
-        enableHarvest = false;
-        enablePestice = false;
-        enableWater = false;
-        enableFertalizer = false;
-    }
-    function useFertalizer(_position: Vector, _field: Field): void {
-        for (let i: number = 0; i < plants.length; i++) {
-            if (plants[i].position == _position && plants[i].fertalized == false) {
-                plants[i].fertalized = true;
-                Fertalizer.draw(_position);
-                fertalizerInventory--;
-                Inventory.update();
-                plants[i].growthrate = plants[i].growthrate + 0.2;
-
-            }
-            else if (plants[i].position == _position && plants[i].fertalized == true) {
-                if (plants[i].holdsPest == true) {
-                    removePest(i);
-                }
-                plants.splice(i, 1);
-                _field.draw();
-                console.log(plants);
-            }
-        }
-    }
-    function updateFertalizer(): void {
-        for (let plant of plants) {
-            if (plant.fertalized == true) {
-                Fertalizer.draw(plant.position);
-            }
-        }
-    }
-    // function drawFertalizer(_position: Vector): void {
-    //     crc2.save();
-    //     crc2.strokeStyle = "white";
-    //     crc2.translate(_position.x, _position.y);
-    //     crc2.beginPath();
-    //     crc2.moveTo(1, 1);
-    //     crc2.lineTo(99, 1);
-    //     crc2.lineTo(99, 99);
-    //     crc2.lineTo(1, 99);
-    //     crc2.closePath();
-    //     crc2.lineWidth = 2;
-    //     crc2.stroke();
-    //     crc2.restore();
-    // }
 }

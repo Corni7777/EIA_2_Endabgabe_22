@@ -25,6 +25,7 @@ var Garden22;
                 }
             }
         };
+        Fertalizer.price = Math.random() + 0.5;
         return Fertalizer;
     }());
     Garden22.Fertalizer = Fertalizer;

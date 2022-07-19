@@ -6,7 +6,7 @@ namespace Garden22 {
         public growthrate: number;
         public name: string;
         public holdsPest: boolean;
-        public water: number; 
+        public water: number;
         public fertalized: boolean;
 
 
@@ -15,6 +15,20 @@ namespace Garden22 {
             this.size = 1;
             this.holdsPest = false;
             this.fertalized = false;
+        }
+        static drawHarvestIndicator(_position: Vector): void {
+            crc2.save();
+            crc2.strokeStyle = "goldenrod";
+            crc2.translate(_position.x, _position.y);
+            crc2.beginPath();
+            crc2.moveTo(3, 3);
+            crc2.lineTo(97, 3);
+            crc2.lineTo(97, 97);
+            crc2.lineTo(3, 97);
+            crc2.closePath();
+            crc2.lineWidth = 6;
+            crc2.stroke();
+            crc2.restore();
         }
 
         public draw(): void {

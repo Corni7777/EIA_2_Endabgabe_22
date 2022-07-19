@@ -21,7 +21,7 @@ var Garden22;
             var _this = _super.call(this, _position) || this;
             _this.growthrate = 0.4;
             _this.name = "Carrot";
-            _this.water = 5;
+            _this.water = 3;
             return _this;
         }
         Carrot.prototype.draw = function () {
@@ -30,8 +30,8 @@ var Garden22;
             Garden22.crc2.translate(this.position.x + 50, this.position.y + 50);
             Garden22.crc2.beginPath();
             Garden22.crc2.moveTo(0, 15 * this.size);
-            Garden22.crc2.lineTo(-15 * (this.size / 2), -15 * this.size);
-            Garden22.crc2.lineTo(15 * (this.size / 2), -15 * this.size);
+            Garden22.crc2.lineTo(-15 * (this.size / 2), -15 * (this.size) * 0.8);
+            Garden22.crc2.lineTo(15 * (this.size / 2), -15 * (this.size) * 0.8);
             Garden22.crc2.closePath();
             Garden22.crc2.fill();
             Garden22.crc2.restore();

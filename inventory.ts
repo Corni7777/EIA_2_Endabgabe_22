@@ -11,7 +11,6 @@ namespace Garden22 {
 
 
         static update(): void {
-            console.log(Inventory.carrotAmount);
             document.querySelector("#carrotamount").innerHTML = Inventory.carrotAmount.toString() + "x";
             document.querySelector("#tomatoamount").innerHTML = Inventory.tomatoAmount.toString() + "x";
             document.querySelector("#cucumberamount").innerHTML = Inventory.cucumberAmount.toString() + "x";

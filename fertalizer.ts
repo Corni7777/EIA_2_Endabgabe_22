@@ -1,5 +1,6 @@
 namespace Garden22 {
     export class Fertalizer {
+        static price: number = Math.random() + 0.5;
         static draw(_position: Vector): void {
             crc2.save();
             crc2.strokeStyle = "white";
